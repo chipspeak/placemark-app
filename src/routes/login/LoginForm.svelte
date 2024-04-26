@@ -15,7 +15,8 @@
     if (session) {
       session.name = email;
       currentSession.set(session);
-      goto("/donate");
+      localStorage.placemark = JSON.stringify(session);
+      goto("/create");
     } else {
       email = "";
       password = "";

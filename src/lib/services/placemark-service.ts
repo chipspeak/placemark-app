@@ -3,7 +3,7 @@ import type { Session, User } from "$lib/types/placemark-types";
 import type { newPlacemark, Placemark } from "$lib/types/placemark-types";
 
 export const placemarkService = {
-  baseUrl: "http://localhost:3000",
+  baseUrl: "http://localhost:8010/proxy",
 
   async signup(user: User): Promise<boolean> {
     try {
@@ -39,6 +39,7 @@ export const placemarkService = {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
       const response = await axios.post(this.baseUrl + "/api/users/placemarks", placemark);
+      console.log(placemark);
       if (response.status == 201) {
         return response.data as Placemark;
       }
@@ -51,11 +52,28 @@ export const placemarkService = {
   async updatePlacemark(placemark: Placemark, session: Session) {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
-      const response = await axios.put(this.baseUrl + "/api/placemarks/" + placemark._id, placemark);
+      console.log("Request payload:", placemark);
+      console.log("Request headers:", axios.defaults.headers.common);
+      const formattedPlacemark = await this.formatPlacemarkPayload(placemark);
+      console.log("Formatted payload:", formattedPlacemark);
+      const response = await axios.put(`${this.baseUrl + "/api/placemarks/" + placemark._id}`, formattedPlacemark);
+      console.log("updating placemark: ", placemark);
       return response.status == 200;
     } catch (error) {
       console.error(error);
       return false;
+    }
+  },
+
+  async formatPlacemarkPayload(placemark: Placemark) {
+    return {
+        title: placemark.title,
+        description: placemark.description,
+        location: placemark.location,
+        latitude: placemark.latitude,
+        longitude: placemark.longitude,
+        category: placemark.category,
+        img: placemark.img,
     }
   },
 

@@ -13,6 +13,7 @@
       <div class="navbar-end">
         <a class="navbar-item" href="/create"> Create </a>
         <a class="navbar-item" href="/report"> View </a>
+        <a class="navbar-item" href="/gallery"> Gallery </a>
         <a class="navbar-item" href="/logout"> Logout [{$currentSession.name}]</a>
       </div>
     </div>

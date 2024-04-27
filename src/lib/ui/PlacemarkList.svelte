@@ -26,7 +26,6 @@ async function handleDelete(placemarkId: string) {
     try {
       const success = await placemarkService.deletePlacemark(placemarkId, get(currentSession));
       if (success) {
-        // if deletion is successful, reload the placemarks
         placemarks = placemarks.filter(placemark => placemark._id !== placemarkId);
       }
     } catch (error) {
@@ -39,7 +38,6 @@ async function handleUpdate(updatedPlacemark: Placemark) {
 try {
   const success = await placemarkService.updatePlacemark(updatedPlacemark, get(currentSession));
   if (success) {
-    // update the placemark in the local state or refresh the placemarks list
     const index = placemarks.findIndex(p => p._id === updatedPlacemark._id);
     if (index !== -1) {
       placemarks[index] = updatedPlacemark;
@@ -57,15 +55,25 @@ function handleImageUploaded(event: CustomEvent<{ imageUrl: string }>, placemark
     const placemark = placemarks.find(p => p._id === placemarkId);
     
     if (placemark) {
-        // Update the placemark's img property
         placemark.img = imageUrl;
         console.log('Updated placemark:', placemark);
-
-        // Optionally, update the placemark on the server
         placemarkService.updatePlacemark(placemark, get(currentSession));
 
         placemarkStore.set(placemarks);
     }
+}
+
+function handleImageDelete(placemarkId: string) {
+  const confirmation = confirm('Are you sure you want to delete this image?');
+  if (confirmation) {
+    const placemark = placemarks.find(p => p._id === placemarkId);
+    if (placemark) {
+        placemark.img = '';
+        console.log('Updated placemark:', placemark);
+        placemarkService.updatePlacemark(placemark, get(currentSession));
+        placemarkStore.set(placemarks);
+    }
+  }
 }
 
 function submit(field: string | number) {
@@ -159,6 +167,12 @@ onMount(() => {
         </a>
         <!-- svelte-ignore a11y-invalid-attribute -->
         <UploadWidget placemarkId={placemark._id} on:imageUploaded={(event) => handleImageUploaded(event, placemark._id)} />
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a href="#" title="Delete Image" class="card-footer-item" on:click={() => handleImageDelete(placemark._id)}>
+          <span class="icon has-text-danger">
+            <i class="fas is-danger fa-camera"></i>
+          </span>
+        </a>
         <!-- svelte-ignore a11y-invalid-attribute -->
         <a href="#" title="Delete Placemark" class="card-footer-item" on:click={() => handleDelete(placemark._id)}>
           <span class="icon has-text-danger">

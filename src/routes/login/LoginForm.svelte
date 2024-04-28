@@ -30,5 +30,5 @@
 {/if}
 <form on:submit|preventDefault={login}>
   <UserCredentials bind:email bind:password />
-  <button class="button is-success is-fullwidth">Log In</button>
+  <button class="mt-5 button is-success is-fullwidth">Log In</button>
 </form>

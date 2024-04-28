@@ -16,8 +16,8 @@ export interface newPlacemark {
   title: string;
   description: string;
   location: string;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
   category: string;
   img?: string;
 }
@@ -25,6 +25,11 @@ export interface newPlacemark {
 export interface Placemark extends newPlacemark {
   _id: string;
   userId: string;
+}
+
+export interface DataSet {
+  labels: string[];
+  datasets: [{ values: number[] }];
 }
 
 

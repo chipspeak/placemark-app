@@ -1,14 +1,14 @@
 <script lang="ts">
   import { placemarkService } from "$lib/services/placemark-service";
-  import type { newPlacemark, Placemark } from "$lib/types/placemark-types";
+  import type { newPlacemark } from "$lib/types/placemark-types";
   import { currentSession, latestPlacemark } from "$lib/stores";
   import { get } from "svelte/store";
 
   let title = "Placemark Title";
   let description = "Placemark Description";
   let location = "Placemark Location";
-  let latitude = "0.1";
-  let longitude = "0.1";
+  let latitude = 0.1;
+  let longitude = 0.1;
   let category = "Park";
   let img = "Placemark Image";
   let message = "";
@@ -55,15 +55,14 @@
   </div>
   <div class="field">
     <label class="label" for="latitude">Latitude:</label>
-    <input bind:value={latitude} class="input" id="latitude" name="latitude" type="text" />
+    <input bind:value={latitude} class="input" id="latitude" name="latitude" type="number" />
   </div>
   <div class="field">
     <label class="label" for="longitude">Longitude:</label>
-    <input bind:value={longitude} class="input" id="longitude" name="longitude" type="text" />
+    <input bind:value={longitude} class="input" id="longitude" name="longitude" type="number" />
   </div>
   <div class="field">
     <label class="label" for="category">Category:</label>
-    <!-- Replace the input with a select element -->
     <select bind:value={category} class="input" id="category" name="category">
       {#each allowedCategories as cat}
         <option value={cat}>{cat}</option>

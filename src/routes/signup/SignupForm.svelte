@@ -36,6 +36,6 @@
 <form on:submit|preventDefault={signup}>
   <UserDetails bind:firstName bind:lastName />
   <UserCredentials bind:email bind:password />
-  <button class="button is-success is-fullwidth">Create Account</button>
+  <button class="mt-5 button is-success is-fullwidth">Create Account</button>
   <br />
 </form>

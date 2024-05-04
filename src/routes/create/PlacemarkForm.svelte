@@ -55,11 +55,11 @@
   </div>
   <div class="field">
     <label class="label" for="latitude">Latitude:</label>
-    <input bind:value={latitude} class="input" id="latitude" name="latitude" type="number" />
+    <input bind:value={latitude} class="input" id="latitude" name="latitude" type="float" />
   </div>
   <div class="field">
     <label class="label" for="longitude">Longitude:</label>
-    <input bind:value={longitude} class="input" id="longitude" name="longitude" type="number" />
+    <input bind:value={longitude} class="input" id="longitude" name="longitude" type="float" />
   </div>
   <div class="field">
     <label class="label" for="category">Category:</label>

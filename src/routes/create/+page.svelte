@@ -11,8 +11,9 @@
   import type { Placemark, DataSet } from "$lib/types/placemark-types";
   import { calculateCategoryData } from "$lib/utils/placemark-calculations";
 
+  export const ssr = false;
+  
   let placemarks: Placemark[] = [];
-  let columnSize: string = "is-one";
   let categoriesTotal: DataSet;
   let map: LeafletMap;
   subTitle.set("Create Placemarks");

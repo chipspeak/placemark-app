@@ -1,29 +1,11 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type { Placemark } from "$lib/types/placemark-types";
-  import { placemarkService } from "$lib/services/placemark-service";
-  import { currentSession, placemarkStore, subTitle } from "$lib/stores";
-  import { get } from "svelte/store";
+  import { subTitle } from "$lib/stores";
 
-  export let placemarks: Placemark[] = [];
+  export let data: any;
+  export let placemarks: Placemark[];
 
 	subTitle.set("Image Gallery");
-
-  // Subscribe to the placemark store to update the placemarks list
-  placemarkStore.subscribe((value) => {
-    placemarks = value;
-  });
-
-  onMount(async () => {
-    // Fetch placemarks from the server when the component mounts
-    const session = get(currentSession);
-    if (session) {
-      const fetchedPlacemarks = await placemarkService.getPlacemarks(session);
-      if (fetchedPlacemarks) {
-        placemarkStore.set(fetchedPlacemarks);
-      }
-    }
-  });
 </script>
 
 

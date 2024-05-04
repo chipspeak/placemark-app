@@ -2,6 +2,7 @@
     import "leaflet/dist/leaflet.css";
     import { onMount } from "svelte";
     import type { Control, Map as LeafletMap } from "leaflet";
+    import { browser } from "$app/environment";
     import L from "leaflet";
   
     export let id = "home-map-id";
@@ -17,6 +18,7 @@
     let baseLayers: any;
   
     onMount(async () => {
+      if (browser) {
       const leaflet = await import("leaflet");
       baseLayers = {
         Terrain: leaflet.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -36,13 +38,15 @@
         layers: [defaultLayer]
       });
       control = leaflet.control.layers(baseLayers, overlays).addTo(imap);
+    }
     });
 
     export function moveTo(lat: number, lng: number) {
     imap.flyTo({ lat: lat, lng: lng });
   }
 
-    export function addMarker(lat: number, lng: number, popupText: string) {
+    export async function addMarker(lat: number, lng: number, popupText: string) {
+    const leaflet = await import("leaflet");
     const marker = L.marker([lat, lng]).addTo(imap);
     const popup = L.popup({ autoClose: false, closeOnClick: false });
     popup.setContent(popupText);

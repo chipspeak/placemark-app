@@ -32,9 +32,10 @@
           return;
         }
         else {
-        latestPlacemark.set(createdPlacemark);
-        console.log("latest: " + $latestPlacemark);
+        // console.log("created: " + createdPlacemark);
         message = `Placemark successfully created!`;
+        latestPlacemark.set(createdPlacemark);
+        return createdPlacemark;
       }
     }
   } 

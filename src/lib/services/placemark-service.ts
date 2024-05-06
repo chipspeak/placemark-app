@@ -34,12 +34,22 @@ export const placemarkService = {
     }
   },
 
+  async getUsers(session: Session): Promise<User[]> {
+    try {
+      axios.defaults.headers.common["Authorization"] = session.token;
+      const response = await axios.get(this.baseUrl + "/api/users");
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  },
+
   async createPlacemark(placemark: newPlacemark, session: Session) {
     console.log(placemark);
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
       const response = await axios.post(this.baseUrl + "/api/users/placemarks", placemark);
-      console.log(placemark);
       if (response.status == 201) {
         return response.data as Placemark;
       }

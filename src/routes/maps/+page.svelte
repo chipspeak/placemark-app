@@ -3,9 +3,6 @@
   import LeafletMap from "$lib/ui/LeafletMap.svelte";
   import { onMount } from "svelte";
   import { subTitle } from "$lib/stores";
-  import { placemarkService } from "$lib/services/placemark-service";
-  import { get } from "svelte/store";
-  import { currentSession, placemarkStore } from "$lib/stores";
   import type { Placemark } from "$lib/types/placemark-types";
 
   subTitle.set("Maps");
@@ -14,7 +11,7 @@
 
   onMount(async () => {
 		const leaflet = await import("leaflet");
-    const placemarks = await placemarkService.getPlacemarks(get(currentSession));
+    const placemarks = data.placemarks;
     placemarks.forEach((placemark: Placemark) => {
       const popup = `
             <Card/>
@@ -22,7 +19,7 @@
             <br>
             <img src='${placemark.img}' alt='Placemark Image' style='width: 100%; height: auto;'>
         `;
-      map.addMarker(placemark.latitude, placemark.longitude, popup);
+      map.addMarker(placemark.latitude, placemark.longitude, popup, placemark.category);
     });
     const mostRecentPlacemark = placemarks[placemarks.length - 1];
     if (mostRecentPlacemark) {

@@ -14,6 +14,11 @@ export let columnSize: string = "is-one-third";
 let editState: Record<string, Placemark> = {};
 let photoCollapse: Record<string, boolean> = {};
 let collapseState: Record<string, boolean> = {};
+let currentImageIndex: Record<string, number> = {};
+let weatherDataMap: Record<string, any> = {};
+let weatherCollapse: Record<string, boolean> = {};
+
+
 
 const allowedCategories = ["Park", "Castle", "Ancient Ruin", "Walk", "Beach", "River", "Lake", "Waterfall", "Hike", "Cave", "Ringfort", "Dolmen", "Monument", "National Park"];
 
@@ -51,12 +56,29 @@ try {
   }
 }
 
+function handleImagePrevious(placemarkId: string) {
+    const placemark = placemarks.find(p => p._id === placemarkId);
+    if (placemark && placemark.img && placemark.img.length > 0) {
+        // Decrement currentImageIndex for the placemark
+        currentImageIndex[placemarkId] = (currentImageIndex[placemarkId] - 1 + placemark.img.length) % placemark.img.length;
+    }
+}
+
+function handleImageNext(placemarkId: string) {
+    const placemark = placemarks.find(p => p._id === placemarkId);
+    if (placemark && placemark.img && placemark.img.length > 0) {
+        // Increment currentImageIndex for the placemark
+        currentImageIndex[placemarkId] = (currentImageIndex[placemarkId] + 1) % placemark.img.length;
+    }
+}
+
 function handleImageUploaded(event: CustomEvent<{ imageUrl: string }>, placemarkId: string) {
     const imageUrl = event.detail.imageUrl;
     const placemark = placemarks.find(p => p._id === placemarkId);
     
     if (placemark) {
-        placemark.img = imageUrl;
+        placemark.img ??= [];
+        placemark.img.push(imageUrl);
         console.log('Updated placemark:', placemark);
         placemarkService.updatePlacemark(placemark, get(currentSession));
 
@@ -65,16 +87,21 @@ function handleImageUploaded(event: CustomEvent<{ imageUrl: string }>, placemark
 }
 
 function handleImageDelete(placemarkId: string) {
-  const confirmation = confirm('Are you sure you want to delete this image?');
-  if (confirmation) {
-    const placemark = placemarks.find(p => p._id === placemarkId);
-    if (placemark) {
-        placemark.img = '';
-        console.log('Updated placemark:', placemark);
-        placemarkService.updatePlacemark(placemark, get(currentSession));
-        placemarkStore.set(placemarks);
+    const confirmation = confirm('Are you sure you want to delete this image?');
+    if (confirmation) {
+        const placemark = placemarks.find(p => p._id === placemarkId);
+        if (placemark && Array.isArray(placemark.img) && placemark.img.length > 0) {
+            // Remove the current image from the img array
+            placemark.img.splice(currentImageIndex[placemarkId], 1);
+            // Update the placemark
+            placemarkService.updatePlacemark(placemark, get(currentSession));
+            placemarkStore.set(placemarks);
+            // Adjust the currentImageIndex if necessary
+            if (currentImageIndex[placemarkId] >= placemark.img.length) {
+                currentImageIndex[placemarkId] = 0;
+            }
+        }
     }
-  }
 }
 
 function submit(field: string | number) {
@@ -99,12 +126,34 @@ function togglePhotoCollapse(event: Event, id: string): void {
   photoCollapse[id] = !photoCollapse[id];
 }
 
+// Base URL for OpenWeather icons
+const iconBaseUrl = "http://openweathermap.org/img/wn/";
+
+function getIconUrl(iconCode: string): string {
+    return `${iconBaseUrl}${iconCode}@2x.png`; // Construct the icon URL
+}
+
+// Toggle the collapsible state of weather conditions
+function toggleWeatherCollapse(event: Event, id: string): void {
+    event.preventDefault();
+    console.log('Toggling weather collapse for:', id);
+    weatherCollapse[id] = !weatherCollapse[id];
+}
+
 onMount(() => {
   placemarks = data.placemarks;
-  placemarks.forEach(placemark => {
+  placemarks.forEach(async (placemark) => {
+    try {
+      const weatherData = await placemarkService.getPlacemarkWeather(placemark, get(currentSession));
+      console.log('Weather data:', weatherData)
+      weatherDataMap[placemark._id] = weatherData;
+    } catch (error) {
+        console.error(`Failed to fetch weather data for placemark ${placemark._id}:`, error);
+      }
       collapseState[placemark._id] = false; 
       photoCollapse[`photo-${placemark._id}`] = false;
       editState[placemark._id] = { ...placemark};
+      currentImageIndex[placemark._id] = 0;
     });
 });
 </script>
@@ -132,13 +181,33 @@ onMount(() => {
         </a>
       </header>
       <div class="card-content collapse" id="details-{placemark._id}">
-        <div class="content">
+        <div class="columns">
+        <div class="column pt-5">
           <p><strong>Description:</strong> <InPlaceEdit bind:value={placemark.description} on:submit={submit('description')}/></p>
           <p><strong>Location:</strong> <InPlaceEdit bind:value={placemark.location} on:submit={submit('location')}/></p>
           <p><strong>Latitude:</strong> <InPlaceEdit bind:value={placemark.latitude} on:submit={submit('latitude')}/></p>
           <p><strong>Longitude:</strong> <InPlaceEdit bind:value={placemark.longitude} on:submit={submit('longitude')}/></p>
           <p><strong>Category:</strong> <InPlaceEdit bind:value={placemark.category} on:submit={submit('category')} isCategoryField={true} allowedCategories={allowedCategories} /></p>
-
+        </div>
+        <div class="column has-text-centered">
+          {#if weatherDataMap[placemark._id]?.weather}
+          {#each weatherDataMap[placemark._id].weather as weather}
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a title="Expand/Collapse Weather" aria-label="more options" data-action="collapse" 
+          href="#" on:click={(event) => toggleWeatherCollapse(event, `weather-${placemark._id}`)}>
+              <img src={getIconUrl(weather.icon)} alt={weather.description} title={weather.description} />
+        </a>
+          {/each}
+          <div class="collapse has-text-left" id={`weather-${placemark._id}`} class:is-hidden={weatherCollapse[`weather-${placemark._id}`]}>
+            <p><strong>Conditions:</strong> {weatherDataMap[placemark._id]?.weather[0].description}</p>
+            <p><strong>Temperature:</strong> {weatherDataMap[placemark._id]?.main.temp}</p>
+            <p><strong>Wind Speed:</strong> {weatherDataMap[placemark._id]?.wind.speed}</p>
+            <p><strong>Wind Direction:</strong> {weatherDataMap[placemark._id]?.wind.deg}</p>
+            <p><strong>Pressure</strong> {weatherDataMap[placemark._id]?.main.pressure}</p>
+            <p><strong>Humidity:</strong> {weatherDataMap[placemark._id]?.main.humidity}</p>
+          </div>
+      {/if}
+        </div>
         </div>
         <!-- svelte-ignore a11y-invalid-attribute -->
         <a class="card-header-icon" title="Expand/Collapse Photo" aria-label="more options" data-action="collapse" href="#" on:click={(event) => togglePhotoCollapse(event, `photo-${placemark._id}`)}>
@@ -151,13 +220,31 @@ onMount(() => {
               {/if}
           </span>
         </a>
-        {#if placemark.img}
+        {#if placemark.img && placemark.img.length > 0}
         <div class="card-image collapse" id={`photo-${placemark._id}`} class:is-hidden={photoCollapse[`photo-${placemark._id}`]}>
-          <figure class="image">
-            <img src={placemark.img} alt="" />
-          </figure>
+            <figure class="image mb-5">
+                <!-- Display the current image -->
+                <!-- svelte-ignore a11y-img-redundant-alt -->
+                <img src={placemark.img[currentImageIndex[placemark._id]]} alt="Placemark Image" />
+            </figure>
+            <div class="ml-5 mr-5 is-flex is-justify-content-space-between">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a class="icon has-text-dark" title="Previous Image" on:click={() => handleImagePrevious(placemark._id)}>
+                  <i class="fas fa-chevron-left"></i>
+              </a>
+              
+                <!-- Right icon to navigate to the next image -->
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a class="icon has-text-dark" title="Next Image" on:click={() => handleImageNext(placemark._id)}>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                </div>
         </div>
-        {/if}
+    {/if}
       </div>
       <footer class="card-footer">
         <hr>

@@ -28,13 +28,13 @@
     chartType = "bar";
     selectedDataset = "category";
     chartData = categoriesTotal;
-    console.log($latestPlacemark)
+    console.log($currentSession);
     placemarks.forEach((placemark: Placemark) => {
             const popup = `
             <Card/>
             <h1><strong>${placemark.title}</strong></h1>
             <br>
-            <img src='${placemark.img}' alt='Placemark Image' style='width: 100%; height: auto;'>
+            <img src='${placemark.img[0]}' alt='Placemark Image' style='width: 100%; height: auto;'>
         `;
             map.addMarker(placemark.latitude, placemark.longitude, popup, placemark.category);
         });
@@ -58,7 +58,7 @@
             <Card/>
             <h1><strong>${placemark.title}</strong></h1>
             <br>
-            <img src='${placemark.img}' alt='Placemark Image' style='width: 100%; height: auto;'>
+            <img src='${placemark.img[0]}' alt='Placemark Image' style='width: 100%; height: auto;'>
         `;
             map.addMarker(placemark.latitude, placemark.longitude, popup, placemark.category);
         });
@@ -94,7 +94,7 @@ function changeDataset(dataset: 'category' | 'county') {
 <div class="columns">
   <div class="column">
     <Card title="Placemark Locations">
-      <LeafletMap height={50} bind:this={map}/>
+      <LeafletMap height={50} addCategories={true} bind:this={map}/>
     </Card>
     <Card title="Placemark Charts">
       <div class="chart-controls" style="text-align: right;">

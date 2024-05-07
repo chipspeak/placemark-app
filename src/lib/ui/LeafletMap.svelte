@@ -1,53 +1,86 @@
 <script lang="ts">
-    import "leaflet/dist/leaflet.css";
-    import { onMount } from "svelte";
-    import type { Control, Map as LeafletMap, LayerGroup } from "leaflet";
-    import { browser } from "$app/environment";
-    import L from "leaflet";
-  
-    export let id = "home-map-id";
-    export let height = 80;
-    export let location = { lat: 53.2734, lng: -7.7783203 };
-    export let zoom = 8;
-    export let minZoom = 5;
-    export let activeLayer = "Terrain";
+  import "leaflet/dist/leaflet.css";
+  import { onMount } from "svelte";
+  import type { Control, Map as LeafletMap, LayerGroup } from "leaflet";
+  import { browser } from "$app/environment";
+  import L from "leaflet";
+  import { base } from "$app/paths";
 
-    const categories = ["Park", "Castle", "Ancient Ruin", "Walk", "Beach", "River", "Lake", "Waterfall", "Hike", "Cave", "Ringfort", "Dolmen", "Monument", "National Park"];
+  export let id = "home-map-id";
+  export let height = 80;
+  export let location = { lat: 53.2734, lng: -7.7783203 };
+  export let zoom = 8;
+  export let minZoom = 5;
+  export let activeLayer = "Terrain";
+  export let addCategories = false; // Boolean to control whether to add category layers
 
-    let imap: LeafletMap;
-    let control: Control.Layers;
-    let overlays: Control.LayersObject = {};
-    let baseLayers: any;
-    let categoryLayers: Record<string, LayerGroup> = {};
-  
-    onMount(async () => {
-      if (browser) {
+  const apiKey = "2134afc14a158aa6c847ce4d1ff89332"; // Hardcoded API key for testing
+
+  const categories = ["Park", "Castle", "Ancient Ruin", "Walk", "Beach", "River", "Lake", "Waterfall", "Hike", "Cave", "Ringfort", "Dolmen", "Monument", "National Park"];
+
+  let imap: LeafletMap;
+  let control: Control.Layers;
+  let baseLayers: Record<string, any>;
+  let categoryLayers: Record<string, LayerGroup> = {};
+
+  onMount(async () => {
+    if (browser) {
       const leaflet = await import("leaflet");
-      categories.forEach(category => {
-      categoryLayers[category] = L.layerGroup();
-      });
+
+      // Initialize category layers if addCategories is true
+      if (addCategories) {
+          categories.forEach(category => {
+              categoryLayers[category] = L.layerGroup();
+          });
+      }
+
+      // Base layers
       baseLayers = {
-        Terrain: leaflet.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 17,
-          attribution:
-            'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-        }),
-        Satellite: leaflet.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-        attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-      })
+          Terrain: leaflet.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              maxZoom: 17,
+              attribution:
+                  'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+          }),
+          Satellite: leaflet.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+              attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+          })
       };
 
+      // OpenWeather layers
+      const openWeatherLayer = {
+          Precipitation: leaflet.tileLayer(`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${apiKey}`, { opacity: 0.5 }),
+          Temperature: leaflet.tileLayer(`https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${apiKey}`, { opacity: 0.5 }),
+          Clouds: leaflet.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${apiKey}`, { opacity: 0.5 }),
+          Wind: leaflet.tileLayer(`https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${apiKey}`, { opacity: 0.5 })
+      };
 
-
-      let defaultLayer = baseLayers[activeLayer];
+      // Initialize the map
       imap = leaflet.map(id, {
-        center: [location.lat, location.lng],
-        zoom: zoom,
-        minZoom: minZoom,
-        layers: [defaultLayer, ...Object.values(categoryLayers)]
+          center: [location.lat, location.lng],
+          zoom: zoom,
+          minZoom: minZoom,
+          layers: [baseLayers[activeLayer], openWeatherLayer.Precipitation, openWeatherLayer.Clouds, openWeatherLayer.Wind],
       });
-      control = leaflet.control.layers(baseLayers, categoryLayers).addTo(imap);
-    }
+
+      // Add category layers if addCategories is true
+      if (addCategories) {
+          Object.values(categoryLayers).forEach(layer => {
+              imap.addLayer(layer);
+          });
+      }
+
+        const control = leaflet.control.layers({
+          'Terrain': baseLayers.Terrain,
+          'Satellite': baseLayers.Satellite
+            }, {
+                'Temperature': openWeatherLayer.Temperature,
+                'Precipitation': openWeatherLayer.Precipitation,
+                'Clouds': openWeatherLayer.Clouds,
+                'Wind': openWeatherLayer.Wind,
+                
+                ...categoryLayers
+                }).addTo(imap);
+        }
     });
 
     export function moveTo(lat: number, lng: number) {

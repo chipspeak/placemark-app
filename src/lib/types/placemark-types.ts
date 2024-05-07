@@ -12,6 +12,12 @@ export interface User {
   _id?: string;
 }
 
+export interface firebaseUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  }
+
 export interface newPlacemark {
   title: string;
   description: string;
@@ -19,7 +25,7 @@ export interface newPlacemark {
   latitude: number;
   longitude: number;
   category: string;
-  img?: string;
+  img?: string[];
 }
 
 export interface Placemark extends newPlacemark {
@@ -31,5 +37,6 @@ export interface DataSet {
   labels: string[];
   datasets: [{ values: number[] }];
 }
+
 
 

@@ -10,7 +10,7 @@
   let latitude = 0.1;
   let longitude = 0.1;
   let category = "Park";
-  let img = "Placemark Image";
+  let img = ["Placemark Image"];
   let message = "";
   const allowedCategories = ["Park", "Castle", "Ancient Ruin", "Walk", "Beach", "River", "Lake", "Waterfall", "Hike", "Cave", "Ringfort", "Dolmen", "Monument", "National Park"];
 
@@ -24,7 +24,7 @@
           latitude : latitude,
           longitude : longitude,
           category : category,
-          img : "/images/burren.jpg",
+          img : ["/images/burren.jpg"],
         };
         const createdPlacemark = await placemarkService.createPlacemark(newPlacemark, get(currentSession));
         if (!createdPlacemark) {

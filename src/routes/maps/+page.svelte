@@ -13,13 +13,23 @@
 		const leaflet = await import("leaflet");
     const placemarks = data.placemarks;
     placemarks.forEach((placemark: Placemark) => {
+      if (placemark.img) {
       const popup = `
             <Card/>
             <h1><strong>${placemark.title}</strong></h1>
             <br>
-            <img src='${placemark.img}' alt='Placemark Image' style='width: 100%; height: auto;'>
+            <img src='${placemark.img[0]}' alt='Placemark Image' style='width: 100%; height: auto;'>
         `;
-      map.addMarker(placemark.latitude, placemark.longitude, popup, placemark.category);
+        map.addMarker(placemark.latitude, placemark.longitude, popup, placemark.category);
+      } else {
+        const popup = `
+            <Card/>
+            <h1><strong>${placemark.title}</strong></h1>
+            <br>
+        `;
+        map.addMarker(placemark.latitude, placemark.longitude, popup, placemark.category);
+      }
+      
     });
     const mostRecentPlacemark = placemarks[placemarks.length - 1];
     if (mostRecentPlacemark) {
@@ -29,5 +39,5 @@
 </script>
 
 <Card title="Placemark Locations">
-  <LeafletMap height={60} bind:this={map} />
+  <LeafletMap height={60} addCategories={false} bind:this={map} />
 </Card>

@@ -2,6 +2,7 @@ import axios from "axios";
 import type { Session, User } from "$lib/types/placemark-types";
 import type { newPlacemark, Placemark } from "$lib/types/placemark-types";
 
+
 export const placemarkService = {
   baseUrl: "http://localhost:8010/proxy",
 
@@ -21,7 +22,7 @@ export const placemarkService = {
       if (response.data.success) {
         axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
         const session: Session = {
-          name: response.data.name,
+          name: response.data.email,
           token: response.data.token,
           _id: response.data.id
         };
@@ -86,6 +87,21 @@ export const placemarkService = {
         img: placemark.img,
     }
   },
+
+  async getPlacemarkWeather(placemark: Placemark, session: Session) {
+    try {
+      console.log("Request payload:", placemark);
+      axios.defaults.headers.common["Authorization"] = session.token;
+      const response = await axios.post(this.baseUrl + "/api/getWeather", placemark);
+      if (response.status == 200) {
+        return response.data;
+      }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  },
+
 
   async getPlacemarks(session: Session): Promise<Placemark[]> {
     try {

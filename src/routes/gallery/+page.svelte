@@ -8,7 +8,7 @@
 <!-- Gallery of placemark images -->
 <div>
     <Card title="Gallery">
-    <Gallery data={data} placemarks={data.placemarks}/>
+    <Gallery placemarks={data.placemarks}/>
     </Card> 
 </div>
     

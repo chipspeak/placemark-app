@@ -11,5 +11,5 @@
 </script>
 
 <Card title="All Placemarks">
-  <PlacemarkList data={data} placemarks={data.placemarks}/>
+  <PlacemarkList data={data} columnSize={"is-one-third"} placemarks={data.placemarks}/>
 </Card>

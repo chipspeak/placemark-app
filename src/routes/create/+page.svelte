@@ -43,6 +43,7 @@
         }
   });
 
+  // Subscribe to the latestPlacemark store to get the most recent placemark
   latestPlacemark.subscribe(async (createPlacemark) => {
   if (createPlacemark) {
       placemarks.push(createPlacemark);

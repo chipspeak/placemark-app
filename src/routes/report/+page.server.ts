@@ -45,7 +45,4 @@ export const load: PageServerLoad = async ({ parent }) => {
         }, {} as Record<string, number>),
     };
 };
-if (session === null) {
-    return { redirect: "/login" };
-  }
 }

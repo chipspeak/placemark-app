@@ -1,8 +1,9 @@
 <script lang="ts">
+    import { placemarkService } from "$lib/services/placemark-service";
+    import { currentSession } from "$lib/stores";
 	import { onMount, createEventDispatcher } from "svelte";
 
 	export let placemarkId : string;
-
 	let widget: { open: () => void; };
 
 	const cloudinary = typeof window !== 'undefined' ? (window as any).cloudinary : null;
@@ -24,6 +25,10 @@
 
 	async function handleWidget() {
   if (widget) {
+	const placemark = await placemarkService.getPlacemarkById(placemarkId, $currentSession);
+	if (placemark.userId !== $currentSession._id) {
+		return alert('You do not have permission to upload images for this placemark.');
+	}
     widget.open();
   }
 }
@@ -31,8 +36,8 @@
 
 <!-- svelte-ignore a11y-invalid-attribute -->
 <!-- svelte-ignore a11y-missing-content -->
-<a href="#" title="Upload Image" class="card-footer-item" on:click={handleWidget} >
+<button title="Upload Image" class="card-footer-item" on:click={handleWidget} >
 	<span class="icon has-text-success">
 		<i class="fas fa-camera-retro"></i>
 	</span>
-</a>
+</button>

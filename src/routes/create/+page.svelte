@@ -22,13 +22,14 @@
   let selectedDataset: "category" | "county" = "category"; 
 
   onMount(async () => {
-    placemarks = await placemarkService.getPlacemarks(get(currentSession));
+    placemarks = await placemarkService.getPlacemarks($currentSession);
     categoriesTotal = calculateCategoryData(placemarks);
     countiesTotal = calculateCountyData(placemarks);
     chartType = "bar";
     selectedDataset = "category";
     chartData = categoriesTotal;
-    console.log($currentSession);
+    console.log("Current session: " + $currentSession.name);
+    console.log("Latest placemark: " + $latestPlacemark);
     placemarks.forEach((placemark: Placemark) => {
             const popup = `
             <Card/>
@@ -63,7 +64,7 @@
             map.addMarker(placemark.latitude, placemark.longitude, popup, placemark.category);
         });
         const mostRecentPlacemark = placemarks[placemarks.length - 1];
-        console.log("most recent" + mostRecentPlacemark.title);
+        console.log("most recent placemark: " + mostRecentPlacemark.title);
         if (mostRecentPlacemark) {
             map.moveTo(mostRecentPlacemark.latitude, mostRecentPlacemark.longitude);
         }

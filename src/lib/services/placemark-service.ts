@@ -21,16 +21,32 @@ export const placemarkService = {
       const response = await axios.post(`${this.baseUrl}/api/users/authenticate`, { email, password });
       if (response.data.success) {
         axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
+
+        // console.log("response.data: ", response.data);
         const session: Session = {
           name: response.data.email,
           token: response.data.token,
-          _id: response.data.id
+          _id: response.data._id
         };
+        console.log("session token: ", session.token);
+        console.log("session id: ", session._id);
+        console.log("session name: ", session.name);
         return session;
       }
       return null;
     } catch (error) {
       console.log(error);
+      return null;
+    }
+  },
+
+  async getPlacemarkById(placemarkId: string, session: Session): Promise<Placemark | null> {
+    try {
+      axios.defaults.headers.common["Authorization"] = session.token;
+      const response = await axios.get(this.baseUrl + "/api/placemarks/" + placemarkId);
+      return response.data;
+    } catch (error) {
+      console.error(error);
       return null;
     }
   },
@@ -63,12 +79,10 @@ export const placemarkService = {
   async updatePlacemark(placemark: Placemark, session: Session) {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
-      console.log("Request payload:", placemark);
-      console.log("Request headers:", axios.defaults.headers.common);
       const formattedPlacemark = await this.formatPlacemarkPayload(placemark);
-      console.log("Formatted payload:", formattedPlacemark);
       const response = await axios.put(`${this.baseUrl + "/api/placemarks/" + placemark._id}`, formattedPlacemark);
       console.log("updating placemark: ", placemark);
+      this.getPlacemarkWeather(placemark, session);
       return response.status == 200;
     } catch (error) {
       console.error(error);
@@ -90,7 +104,6 @@ export const placemarkService = {
 
   async getPlacemarkWeather(placemark: Placemark, session: Session) {
     try {
-      console.log("Request payload:", placemark);
       axios.defaults.headers.common["Authorization"] = session.token;
       const response = await axios.post(this.baseUrl + "/api/getWeather", placemark);
       if (response.status == 200) {

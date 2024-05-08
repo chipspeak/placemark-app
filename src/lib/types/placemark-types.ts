@@ -19,6 +19,8 @@ export interface firebaseUser {
   }
 
 export interface newPlacemark {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
   title: string;
   description: string;
   location: string;

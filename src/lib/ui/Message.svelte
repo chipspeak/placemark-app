@@ -1,9 +1,10 @@
 <script lang="ts">
   export let message = "";
+  export let colour = "";
 </script>
 
-<article class="message is-danger">
-  <div class="message-body">
+
+  <div class="message-body has-text-{colour}">
     {message}
   </div>
-</article>
+

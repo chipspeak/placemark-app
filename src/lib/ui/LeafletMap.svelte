@@ -4,7 +4,6 @@
   import type { Control, Map as LeafletMap, LayerGroup } from "leaflet";
   import { browser } from "$app/environment";
   import L from "leaflet";
-  import { base } from "$app/paths";
 
   export let id = "home-map-id";
   export let height = 80;
@@ -14,7 +13,7 @@
   export let activeLayer = "Terrain";
   export let addCategories = false; // Boolean to control whether to add category layers
 
-  const apiKey = "2134afc14a158aa6c847ce4d1ff89332"; // Hardcoded API key for testing
+  const apiKey = import.meta.env.VITE_WEATHER_API; // API key from .env file
 
   const categories = ["Park", "Castle", "Ancient Ruin", "Walk", "Beach", "River", "Lake", "Waterfall", "Hike", "Cave", "Ringfort", "Dolmen", "Monument", "National Park"];
 

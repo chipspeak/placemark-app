@@ -7,7 +7,6 @@
   import LeafletMap from "$lib/ui/LeafletMap.svelte";
   import { placemarkService } from "$lib/services/placemark-service";
   import { onMount } from "svelte";
-  import { get } from "svelte/store";
   import type { Placemark, DataSet } from "$lib/types/placemark-types";
   import { calculateCategoryData, calculateCountyData } from "$lib/utils/placemark-calculations";
   
@@ -29,7 +28,6 @@
     selectedDataset = "category";
     chartData = categoriesTotal;
     console.log("Current session: " + $currentSession.name);
-    console.log("Latest placemark: " + $latestPlacemark);
     placemarks.forEach((placemark: Placemark) => {
             const popup = `
             <Card/>
@@ -50,9 +48,7 @@
       placemarks.push(createPlacemark);
       categoriesTotal = calculateCategoryData(placemarks);
       countiesTotal = calculateCountyData(placemarks);
-          chartType = "bar";
-    selectedDataset = "category";
-    chartData = categoriesTotal;
+      updateChartData();
       placemarks = [...placemarks];
       placemarks.forEach((placemark: Placemark) => {
             const popup = `
@@ -83,7 +79,7 @@ function updateChartData() {
 
 function changeChartType(type: string) {
   console.log(`Changing chart type to: ${type}`);
-    chartType = type;
+  chartType = type;
 }
 
 function changeDataset(dataset: 'category' | 'county') {
@@ -133,6 +129,6 @@ function changeDataset(dataset: 'category' | 'county') {
     <Card title="Create a new Placemark">
       <PlacemarkForm />
     </Card>
-    </div>
+  </div>
 </div>
 

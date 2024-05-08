@@ -2,6 +2,7 @@
   import Heading from "$lib/ui/Heading.svelte";
   import Menu from "$lib/ui/Menu.svelte";
   import { currentSession } from "$lib/stores";
+  import { fly } from "svelte/transition";
 
   export let data: any;
   if (data.session) {
@@ -12,9 +13,20 @@
 </script>
 
 <div class="container">
-  {#if $currentSession.token}
+    {#if currentSession}
     <Menu />
-    <Heading />
-  {/if}
-  <slot />
+    {/if}
+
+    {#key data.url}
+      <div 
+        in:fly={{ x: -200, duration: 250, delay: 250}}
+        out:fly={{ x: 200, duration: 250}}
+        >
+        {#if currentSession}
+        <Heading />
+        {/if}
+        <slot />
+      </div>
+    {/key}
+
 </div>

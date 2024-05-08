@@ -10,4 +10,7 @@ export const load: PageServerLoad = async ({ parent }) => {
       placemarks: await placemarkService.getPlacemarks(session)
     };
   }
+  if (session === null) {
+    return { redirect: "/login" };
+  }
 };

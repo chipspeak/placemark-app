@@ -76,8 +76,4 @@
     </div>
   </div>
 </form>
-<div class="box mt-4">
-  <div class="content has-text-centered">
-    {message}
-  </div>
-</div>
+

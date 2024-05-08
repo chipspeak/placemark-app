@@ -115,6 +115,19 @@ export const placemarkService = {
     }
   },
 
+  async getPlacemarkForecast(placemark: Placemark, session: Session) {
+    try {
+      axios.defaults.headers.common["Authorization"] = session.token;
+      const response = await axios.post(this.baseUrl + "/api/getWeatherForecast", placemark);
+      if (response.status == 200) {
+        return response.data;
+      }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  },
+
 
   async getPlacemarks(session: Session): Promise<Placemark[]> {
     try {
@@ -122,6 +135,7 @@ export const placemarkService = {
       const response = await axios.get(this.baseUrl + "/api/placemarks");
       return response.data;
     } catch (error) {
+      console.error(error);
       return [];
     }
   },

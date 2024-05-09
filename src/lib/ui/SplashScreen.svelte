@@ -11,7 +11,7 @@
         <div class="column is-6 is-offset-1">
           <h1 class="title is-2 mb-5">
             <span class="icon mr-5"><i class="fas fa-map-marker-alt"></i></span><span class="icon mr-4"><i class="fas fa-map"></i></span>
-            <p>Placemark App</p>
+            <p>PLACEMARK</p>
           </h1>
           <h2 class="subtitle is-4 mt-2">The point-of-interest application</h2>
           <p class="has-text-centered">

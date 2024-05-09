@@ -2,6 +2,7 @@
     import { placemarkService } from "$lib/services/placemark-service";
     import { currentSession } from "$lib/stores";
 	import { onMount, createEventDispatcher } from "svelte";
+	import { acts } from '@tadashi/svelte-notification';
 
 	export let placemarkId : string;
 	let widget: { open: () => void; };
@@ -26,8 +27,8 @@
 	async function handleWidget() {
   if (widget) {
 	const placemark = await placemarkService.getPlacemarkById(placemarkId, $currentSession);
-	if (placemark.userId !== $currentSession._id) {
-		return alert('You do not have permission to upload images for this placemark.');
+	if (placemark?.userId !== $currentSession._id) {
+		return acts.add({ mode: 'danger', lifetime: '3', message: 'You do not have permission to upload images to this placemark!' });
 	}
     widget.open();
   }

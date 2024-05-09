@@ -17,7 +17,7 @@
     <a title="Expand/Collapse Weather" aria-label="more options" data-action="collapse" 
     href="#" on:click={(event) => toggleWeatherCollapse(event, `weather-${placemark._id}`)}>
         <img src={getIconUrl(weather.icon)} alt={weather.description} title={weather.description} />
-  </a>
+    </a>
     {/each}
     <div class="collapse has-text-left" id={`weather-${placemark._id}`} class:is-hidden={weatherCollapse[`weather-${placemark._id}`]}>
       <p><strong>Conditions:</strong> {weatherDataMap[placemark._id]?.weather[0].description}</p>

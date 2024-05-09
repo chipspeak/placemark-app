@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { Placemark } from "$lib/types/placemark-types";
     import UploadWidget from "./UploadWidget.svelte";
-    
+    import { Notifications } from '@tadashi/svelte-notification';
+
     export let placemark: Placemark;
     export let handleUpdate: (placemark: Placemark) => void;
     export let handleDelete: (placemarkId: string) => void;
@@ -36,3 +37,19 @@
       </span>
   </button>
 </footer>
+<Notifications />
+
+<style>
+    :global(:root) {
+        --tadashi_svelte_notifications_width: 250px;
+        --tadashi_svelte_notification__success_color: hsl(0, 0%, 100%);
+        --tadashi_svelte_notification__success_background: hsl(153,53%,53%);
+        --tadashi_svelte_notification__danger_background: hsl(348,100%,70%);
+        --tadashi_svelte_notification_box_shadow: 0 0px 0px hsl(0, 0%, 0%);
+        --tadashi_svelte_notification__content_padding:	1.2em;
+        --tadashi_svelte_notifications_zindex: 1001;
+  
+        /* Customize other properties as needed */
+    }
+</style>
+

@@ -44,6 +44,12 @@
     "dotenv": "^16.4.5",
     "firebase": "^10.11.1",
     "firebase-admin": "^12.1.0",
-    "mongoose": "^8.3.3"
+    "mongoose": "^8.3.3",
+    "svelte-notifications": "^0.9.98"
   }
 }
+
+
+
+
+

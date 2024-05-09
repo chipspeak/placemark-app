@@ -88,7 +88,7 @@
 
     export async function addMarker(lat: number, lng: number, popupText: string, category: string) {
       const marker = L.marker([lat, lng]).addTo(imap);
-      const popup = L.popup({ autoClose: false, closeOnClick: false });
+      const popup = L.popup({ autoClose: true, closeOnClick: false });
       popup.setContent(popupText);
       marker.bindPopup(popup);
       categoryLayers[category].addLayer(marker);

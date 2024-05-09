@@ -12,8 +12,8 @@ export const actions = {
       throw redirect(307, "/");
     } else {
       console.log(`attempting to log in email: ${email} with password: ${password}`);
-      const session = await placemarkService.login(email, password);
-
+      // const session = await placemarkService.login(email, password);
+      const session = await placemarkService.loginViaFirebase(email, password);
       if (session) {
         const userJson = JSON.stringify(session);
         cookies.set("placemark-user", userJson, {
@@ -29,5 +29,4 @@ export const actions = {
       }
     }
   }
-  
 };

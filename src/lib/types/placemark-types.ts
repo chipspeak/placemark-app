@@ -4,6 +4,11 @@ export interface Session {
   token: string;
 }
 
+export interface FirebaseUser {
+  email: string;
+  password: string;
+}
+
 export interface User {
   firstName: string;
   lastName: string;

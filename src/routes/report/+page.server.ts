@@ -2,6 +2,7 @@
 import { placemarkService } from "$lib/services/placemark-service";
 import type { PageServerLoad } from "./$types";
 import type { Placemark } from "$lib/types/placemark-types";
+import { redirect } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({ parent }) => {
     const { session } = await parent();
@@ -44,5 +45,7 @@ export const load: PageServerLoad = async ({ parent }) => {
             return acc;
         }, {} as Record<string, number>),
     };
-};
+} else {
+    throw redirect(303, "/login");
+}
 }

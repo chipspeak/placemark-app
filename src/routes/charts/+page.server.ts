@@ -3,6 +3,7 @@ import { placemarkService } from "$lib/services/placemark-service";
 import { calculateCategoryData, calculateCountyData, calculatePlacemarkByUser } from "$lib/utils/placemark-calculations";
 import type { PageServerLoad } from "./$types";
 import type { Placemark } from "$lib/types/placemark-types";
+import { redirect } from "@sveltejs/kit";
 
 
 export const load: PageServerLoad = async ({ parent }) => {
@@ -33,5 +34,7 @@ export const load: PageServerLoad = async ({ parent }) => {
         countiesTotal: calculateCountyData(placemarks),
         placemarksByUser: calculatePlacemarkByUser(placemarks, users)
       };
-  };
+  } else {
+      throw redirect(303, "/login");
+  }
 };

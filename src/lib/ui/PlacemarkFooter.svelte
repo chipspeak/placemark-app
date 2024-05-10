@@ -48,8 +48,6 @@
         --tadashi_svelte_notification_box_shadow: 0 0px 0px hsl(0, 0%, 0%);
         --tadashi_svelte_notification__content_padding:	1.2em;
         --tadashi_svelte_notifications_zindex: 1001;
-  
-        /* Customize other properties as needed */
     }
 </style>
 

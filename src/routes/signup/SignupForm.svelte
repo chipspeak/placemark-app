@@ -5,8 +5,6 @@
   import Message from "$lib/ui/Message.svelte";
   import { placemarkService } from "$lib/services/placemark-service";
 
-  let firstName = "";
-  let lastName = "";
   let email = "";
   let password = "";
   let message = "";
@@ -15,27 +13,35 @@
     let success = false;
     console.log(`attemting to sign up email: ${email}`);
     let user = {
-      firstName: firstName,
-      lastName: lastName,
       email: email,
       password: password,
     };
     console.log(user)
-    success = await placemarkService.signup(user);
+    success = await placemarkService.signup(user.email, user.password);
     if (success) {
       goto("/login");
     } else {
       message = "Error Trying to sign up";
     }
   }
-</script>
-
-{#if message}
-  <Message {message} />
-{/if}
-<form on:submit|preventDefault={signup}>
-  <UserDetails bind:firstName bind:lastName />
-  <UserCredentials bind:email bind:password />
-  <button class="mt-5 button is-success is-fullwidth">Create Account</button>
-  <br />
-</form>
+  async function handleSignup(providerType: 'google' | 'github' | 'microsoft' ) {
+      let success = false;
+      console.log(`attemting to sign up email: ${email}`);
+      success = await placemarkService.signupViaProvider(providerType);
+      if (success) {
+        goto("/login");
+      } else {
+        message = "Error Trying to sign up";
+      }
+    }
+  </script>
+  
+  {#if message}
+    <Message {message} />
+  {/if}
+  <form on:submit|preventDefault={signup}>
+    <UserCredentials bind:email bind:password />
+    <button class="mt-5 button is-success is-fullwidth">Create Account</button>
+    <br />
+  </form>
+  <button class="mt-5 button is-success is-fullwidth" on:click={() => handleSignup('microsoft')}>Sign up via Microsoft</button>

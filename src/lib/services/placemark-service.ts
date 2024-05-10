@@ -2,35 +2,24 @@
 import axios from "axios";
 import type { Session, User } from "$lib/types/placemark-types";
 import type { newPlacemark, Placemark } from "$lib/types/placemark-types";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, OAuthProvider } from "firebase/auth";
 import { auth } from "$lib/Firebase/firebase.client";
-// import { signInWithEmailAndPassword } from "firebase/auth";
 
 export const placemarkService = {
   baseUrl: "http://localhost:8010/proxy",
 
-  async signup(user: User): Promise<boolean> {
-    try {
-      const response = await axios.post(`${this.baseUrl}/api/users`, user);
-      return response.status == 201;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  },
-
-  async signupViaFirebase(email: string, password: string): Promise<boolean> {
+  async signup(email: string, password: string): Promise<boolean> {
     try {
       // Create a new user using Firebase Authentication
       const firebaseResponse = await createUserWithEmailAndPassword(auth, email, password);
       console.log("firebaseResponse: ", firebaseResponse);
-  
+
       // Check if the firebaseResponse and firebaseResponse.user are valid
       if (!firebaseResponse || !firebaseResponse.user) {
         console.error("Invalid user credential or user is null");
         throw new Error("User creation failed.");
       }
-  
+
       // Extract the email from the UserCredential object
       const userEmail = firebaseResponse.user.email;
 
@@ -38,95 +27,109 @@ export const placemarkService = {
         console.error("Invalid user email");
         throw new Error("User email is null.");
       }
-      
+
       console.log("userEmail: ", userEmail);
       const newUser = {
         email: userEmail
       };
-      const response = await axios.post(`${this.baseUrl}/api/users/createViaFirebase`, newUser );
+      const response = await axios.post(`${this.baseUrl}/api/users`, newUser);
       console.log("response: ", response);
       return response.status == 201;
-
     } catch (error) {
       console.error("Error signing up user:", error);
       throw error;
     }
   },
 
+  async signupViaProvider(providerType: 'google' | 'github' | 'microsoft' ): Promise<boolean> {
+    try {
+      let provider;
+      switch (providerType) {
+          case 'google':
+              provider = new GoogleAuthProvider();
+              break;
+          case 'github':
+              provider = new GithubAuthProvider();
+              break;
+          case 'microsoft':
+              provider = new OAuthProvider('microsoft.com');
+              break;
+          default:
+              throw new Error(`Unsupported provider type: ${providerType}`);
+      }
+      const firebaseResponse = await signInWithPopup(auth, provider);
+      const userEmail = firebaseResponse.user.email;
+      console.log("userEmail via google: ", userEmail);
+      const signup = await axios.post(`${this.baseUrl}/api/users`, { email: userEmail });
+      if (signup.status == 201) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error signing up user:", error);
+      return false;
+    }
+  },
+
+
   async login(email: string, password: string): Promise<Session | null> {
     try {
-      const response = await axios.post(`${this.baseUrl}/api/users/authenticate`, { email, password });
-      if (response.data.success) {
-        axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
-        console.log("response.data: ", response.data);
-
-        // console.log("response.data: ", response.data);
-        const session: Session = {
-          name: response.data.email,
-          token: response.data.token,
-          _id: response.data._id
-        };
-        console.log("session token: ", session.token);
-        console.log("session id: ", session._id);
-        console.log("session name: ", session.name);
-        return session;
-      }
-      return null;
+      const firebaseResponse = await signInWithEmailAndPassword(auth, email, password);
+      const userEmail = firebaseResponse.user.email;
+      const response = await axios.post(`${this.baseUrl}/api/users/authenticate`, { email: userEmail });
+      axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
+      console.log("response.data: ", response.data);
+      const session: Session = {
+        name: response.data.email,
+        token: response.data.token,
+        _id: response.data._id
+      };
+      console.log("session token: ", session.token);
+      console.log("session id: ", session._id);
+      console.log("session name: ", session.name);
+      return session;
     } catch (error) {
-      console.log(error);
+      console.log("Error: ", error);
       return null;
     }
   },
 
-  async loginViaFirebase(email: string, password: string): Promise<Session | null> {
+  async loginWithProvider(providerType: 'google' | 'github' | 'microsoft' ): Promise<Session | null> {
     try {
-      const firebaseResponse = await signInWithEmailAndPassword(auth, email, password);
-      // console.log("firebaseResponse: ", firebaseResponse);
-      const userEmail = firebaseResponse.user.email;
-      console.log("userEmail: ", userEmail);
-      const response = await axios.post(`${this.baseUrl}/api/users/authenticateViaFirebase`, { email: userEmail });
-        axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
-        console.log("response.data: ", response.data);
-
-        // console.log("response.data: ", response.data);
-        const session: Session = {
-          name: response.data.email,
-          token: response.data.token,
-          _id: response.data._id
-        };
-        console.log("session token: ", session.token);
-        console.log("session id: ", session._id);
-        console.log("session name: ", session.name);
-        return session;
-      } catch (error) {
-        console.log("Error: ", error);
-        // Check if the error is an instance of FirebaseAuthError
-        if ((error as any).code) {
-            // Handle different error codes as needed
-            switch ((error as any).code) {
-              case 'auth/user-not-found':
-                console.error("No user found with the provided email.");
-                break;
-              case 'auth/invalid-credential':
-                console.error("Incorrect password provided.");
-                break;
-              case 'auth/invalid-email':
-                console.error("Invalid email format.");
-                break;
-              // Add more cases as needed for other Firebase auth error codes
-              default:
-                console.error("An unknown error occurred during Firebase login.");
-                break;
-            }
-        } else {
-            console.error("An unknown error occurred during Firebase login.");
-        }
-        return null;
+      let provider;
+      switch (providerType) {
+          case 'google':
+              provider = new GoogleAuthProvider();
+              break;
+          case 'github':
+              provider = new GithubAuthProvider();
+              break;
+          case 'microsoft':
+              provider = new OAuthProvider('microsoft.com');
+              break;
+          default:
+              throw new Error(`Unsupported provider type: ${providerType}`);
       }
-    },
-
-  
-
+      const firebaseResponse = await signInWithPopup(auth, provider);
+      const userEmail = firebaseResponse.user.email;
+      console.log("userEmail via google: ", userEmail);
+      const response = await axios.post(`${this.baseUrl}/api/users/authenticate`, { email: userEmail });
+      axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
+      console.log("response.data: ", response.data);
+      const session: Session = {
+        name: response.data.email,
+        token: response.data.token,
+        _id: response.data._id
+      };
+      console.log("session token from placemark service function: ", session.token);
+      console.log("session id from placemark service function:: ", session._id);
+      console.log("session name from placemark service function:: ", session.name);
+      return session;
+    } catch (error) {
+      console.log("Error: ", error);
+      return null;
+    }
+  },
 
   async getPlacemarkById(placemarkId: string, session: Session): Promise<Placemark | null> {
     try {
@@ -180,14 +183,14 @@ export const placemarkService = {
 
   async formatPlacemarkPayload(placemark: Placemark) {
     return {
-        title: placemark.title,
-        description: placemark.description,
-        location: placemark.location,
-        latitude: placemark.latitude,
-        longitude: placemark.longitude,
-        category: placemark.category,
-        img: placemark.img,
-    }
+      title: placemark.title,
+      description: placemark.description,
+      location: placemark.location,
+      latitude: placemark.latitude,
+      longitude: placemark.longitude,
+      category: placemark.category,
+      img: placemark.img
+    };
   },
 
   async getPlacemarkWeather(placemark: Placemark, session: Session) {
@@ -216,7 +219,6 @@ export const placemarkService = {
     }
   },
 
-
   async getPlacemarks(session: Session): Promise<Placemark[]> {
     try {
       console.log("session token: ", session.token);
@@ -224,7 +226,6 @@ export const placemarkService = {
       const response = await axios.get(this.baseUrl + "/api/placemarks");
       return response.data;
     } catch (error) {
-
       return [];
     }
   },
@@ -239,5 +240,5 @@ export const placemarkService = {
       console.error(error);
       return false;
     }
-  },
+  }
 };

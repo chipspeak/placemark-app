@@ -13,16 +13,16 @@
 </script>
 
 <div class="container">
-    {#if currentSession}
+    {#if $currentSession.token}
     <Menu />
     {/if}
 
     {#key data.url}
       <div 
-        in:fly={{ x: -200, duration: 250, delay: 250}}
-        out:fly={{ x: 200, duration: 250}}
+        in:fly={{ x: -200, duration: 300, delay: 300}}
+        out:fly={{ x: 200, duration: 300}}
         >
-        {#if currentSession}
+        {#if $currentSession.token}
         <Heading />
         {/if}
         <slot />

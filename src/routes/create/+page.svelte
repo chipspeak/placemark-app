@@ -91,13 +91,14 @@ function changeDataset(dataset: 'category' | 'county') {
 
 <div class="columns">
   <div class="column">
-    <Card title="Placemark Locations">
+    <Card title="Placemark Locations" icon="fa-map">
       <LeafletMap height={50} addCategories={true} bind:this={map}/>
     </Card>
-    <Card title="Placemark Charts">
-      <div class="chart-controls" style="text-align: right;">
+    <Card title="Placemark Charts" icon="fa-calculator">
+      <span slot="header-extra" class="is-flex is-align-items-center">
+        <!-- Dropdown for selecting a placemark -->
           <!-- Chart Type Dropdown -->
-          <div class="select is-success mr-3">
+          <div class="select is-small mr-3">
               <select id="chartType" bind:value={chartType} on:change={() => changeChartType(chartType)}>
                   <option value="bar">Bar</option>
                   <option value="pie">Pie</option>
@@ -106,13 +107,13 @@ function changeDataset(dataset: 'category' | 'county') {
           </div>
 
           <!-- Dataset Dropdown -->
-          <div class="select is-success">
+          <div class="select is-small">
               <select id="dataset" bind:value={selectedDataset} on:change={() => changeDataset(selectedDataset)}>
                   <option value="category">Category</option>
                   <option value="county">County</option>
               </select>
           </div>
-      </div>
+      </span>
 
       <!-- Conditional rendering of the chart based on chartType -->
       {#if chartType === "bar"}
@@ -127,7 +128,7 @@ function changeDataset(dataset: 'category' | 'county') {
   </Card>
   </div>
   <div class="column is-one-third">
-    <Card title="Create a new Placemark">
+    <Card title="Create a new Placemark" icon="fa-plus">
       <PlacemarkForm />
     </Card>
   </div>

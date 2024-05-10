@@ -2,6 +2,7 @@
   import type { Placemark } from "$lib/types/placemark-types";
   import { subTitle } from "$lib/stores";
   import { onMount } from "svelte";
+  import { cardColumnSizeStore } from "$lib/stores";
 
   // export let data: any;
   export let placemarks: Placemark[];
@@ -47,7 +48,7 @@ onMount(async () => {
 <div class="columns is-multiline">
   {#each placemarks as placemark}
   {#if placemark.img && placemark.img.length > 0}
-<div class = "column is-half">
+<div class = "column {$cardColumnSizeStore}">
   <div class="card">
     <div class="card-image">
       <figure class="image mb-5">

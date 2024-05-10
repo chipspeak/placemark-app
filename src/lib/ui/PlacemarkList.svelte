@@ -10,7 +10,6 @@ import { acts } from '@tadashi/svelte-notification';
 
 export let data: any;
 export let placemarks: Placemark[];
-export let columnSize: string = "is-one-third";
 
 let editState: Record<string, Placemark> = {};
 let photoCollapse: Record<string, boolean> = {};
@@ -171,7 +170,6 @@ onMount(() => {
   handleImageUploaded={handleImageUploaded}
   handleImageDelete={handleImageDelete}
   submit={submit}
-  columnSize={columnSize}
   weatherCollapse={weatherCollapse}
   weatherDataMap={weatherDataMap}
   currentImageIndex={currentImageIndex}

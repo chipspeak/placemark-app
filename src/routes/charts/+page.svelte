@@ -14,10 +14,8 @@
   let placemarks: Placemark[] = [];
   let weatherForecastMap: Record<string, any> = {};
 
-
   let selectedPlacemarkId: string;
   let selectedDataType: 'temperature' | 'wind' | 'pressure' = 'temperature';
-
 
   let trendData: DataSet = {
     labels: [],
@@ -32,7 +30,6 @@
       resetTrendData();
     }
   }
-
 
   function handleDataTypeChange() {
     const placemark = placemarks.find(pm => pm._id === selectedPlacemarkId);
@@ -54,7 +51,6 @@
       const time = new Date(entry.dt_txt).getHours();
       return time === 12 || time === 21;
     });
-
 
     const labels = filteredEntries.map((entry: { dt_txt: string; }) => entry.dt_txt);
     let values: number[];
@@ -81,7 +77,6 @@
     };
   }
 
-
   function resetTrendData(): void {
     trendData = {
       labels: [],
@@ -96,8 +91,6 @@
 
     if (placemarks.length > 0) {
         selectedPlacemarkId = placemarks[0]._id;
-
-
         const defaultPlacemark = placemarks[0];
         updateTrendData(defaultPlacemark, selectedDataType);
     }
@@ -105,41 +98,40 @@
 </script>
 
 <div>
-  <Card title="Charts">
-    <!-- Dropdown for selecting a placemark -->
-    <Card title="Forecasted Conditions">
-      <div class="chart-controls" style="text-align: right;">
-        <div class="select is-success mr-3">
-          <select id="placemarkSelect" bind:value={selectedPlacemarkId} on:change={handlePlacemarkChange}>
-            {#each placemarks as placemark}
-              <option value={placemark._id}>{placemark.title}</option>
-            {/each}
-          </select>
-        </div>
+  <Card title="Charts" icon="fa-calculator">
+    <!-- Inject the select dropdowns into the header-extra slot -->
+    <span slot="header-extra" class="is-flex is-align-items-center">
+      <!-- Dropdown for selecting a placemark -->
+      <span class="select is-small mr-3">
+        <select bind:value={selectedPlacemarkId} on:change={handlePlacemarkChange}>
+          {#each placemarks as placemark}
+            <option value={placemark._id}>{placemark.title}</option>
+          {/each}
+        </select>
+      </span>
 
       <!-- Dropdown for selecting data type (temperature, wind, or pressure) -->
-        <div class="select is-success">
-          <select id="dataTypeSelect" bind:value={selectedDataType} on:change={handleDataTypeChange}>
-            <option value="temperature">Temperature °C</option>
-            <option value="wind">Wind Speed km/h</option>
-            <option value="pressure">Pressure hPa</option>
-          </select>
-        </div>
-      </div>
+      <span class="select is-small">
+        <select bind:value={selectedDataType} on:change={handleDataTypeChange}>
+          <option value="temperature">Temperature °C</option>
+          <option value="wind">Wind Speed km/h</option>
+          <option value="pressure">Pressure hPa</option>
+        </select>
+      </span>
+    </span>
 
-      <!-- Chart for the trend data -->
-      <Chart data={trendData} type="line" />
-    </Card>
+    <!-- Chart for the trend data -->
+    <Chart data={trendData} type="line" />
 
     <!-- Charts for category and county counts of placemarks -->
     <div class="columns">
       <div class="column has-text-centered">
-        <Card title="Number of Placemarks per County">
+        <Card title="Number of Placemarks per County" icon="fa-map">
           <Chart data={data.countiesTotal} type="pie" />
         </Card>
       </div>
       <div class="column has-text-centered">
-        <Card title="Number of Placemarks per Category">
+        <Card title="Number of Placemarks per Category" icon="fa-list">
           <Chart data={data.categoriesTotal} type="bar" />
         </Card>
       </div>

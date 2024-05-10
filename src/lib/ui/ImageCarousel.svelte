@@ -25,6 +25,14 @@
     
     </script>
     
+    <style>
+        .card-image img {
+          width: 100%; 
+          height: 400px;
+          object-fit: cover; 
+        }
+      </style>
+
     {#if placemark.img && placemark.img.length > 0}
     <div class="card-image collapse" id={`photo-${placemark._id}`} class:is-hidden={photoCollapse[`photo-${placemark._id}`]}>
         <figure class="image mb-5">

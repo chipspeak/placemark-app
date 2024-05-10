@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { getIconUrl } from "$lib/utils/utils";
   import type { Placemark } from "$lib/types/placemark-types";
   import InPlaceEdit from "./InPlaceEdit.svelte";
   import PlacemarkDetails from "./PlacemarkDetails.svelte";
   import WeatherDetails from "./WeatherDetails.svelte";
   import ImageCarousel from "./ImageCarousel.svelte";
   import PlacemarkFooter from "./PlacemarkFooter.svelte";
+  import { columnSizeStore } from "$lib/stores";
 
   export let toggleWeatherCollapse: (event: Event, id: string) => void;
   export let toggleCollapse: (event: Event, id: string) => void;
@@ -16,7 +16,6 @@
   export let handleImageDelete: (placemarkId: string) => void;
   export let submit: (field: string | number) => void;
 
-  export let columnSize: string;
   export let weatherCollapse: Record<string, boolean> = {};
   export let placemarks: Placemark[];
   export let currentImageIndex: Record<string, number> = {};
@@ -24,9 +23,10 @@
   export let collapseState: Record<string, boolean> = {};
   export let weatherDataMap: Record<string, any>;
   export let placemark: Placemark;
+  
 </script>
 
-<div class="column {columnSize}">
+<div class="column {$columnSizeStore}">
   <div class="card">
     <header class="card-header">
       <p class="card-header-title is-centered">

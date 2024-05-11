@@ -12,63 +12,106 @@
   let category = "Park";
   let img = ["Placemark Image"];
   let message = "";
+  let textColour = "";
   const allowedCategories = ["Park", "Castle", "Ancient Ruin", "Walk", "Beach", "River", "Lake", "Waterfall", "Hike", "Cave", "Ringfort", "Dolmen", "Monument", "National Park"];
 
 
   async function createPlacemark() {
-    if (title && description && location && latitude && longitude && category) {
-        const newPlacemark: newPlacemark = {
-          title : title,
-          description : description,
-          location : location,
-          latitude : latitude,
-          longitude : longitude,
-          category : category,
-          img : ["/images/burren.jpg"],
-        };
-        const createdPlacemark = await placemarkService.createPlacemark(newPlacemark, get(currentSession));
-        if (!createdPlacemark) {
-          message = "Creation not completed - some error occurred";
-          return;
-        }
-        else {
-        // console.log("created: " + createdPlacemark);
-        message = `Placemark successfully created!`;
-        latestPlacemark.set(createdPlacemark);
-        return createdPlacemark;
-      }
-    }
-  } 
+  let inputError = false;
+
+  // Check if latitude is within range
+  if (latitude < -90 || latitude > 90) {
+    textColour = "danger";
+    message = "Latitude must be between -90 and 90 degrees.";
+    inputError = true;
+  }
+
+  // Check if longitude is within range
+  if (longitude < -180 || longitude > 180) {
+    textColour = "danger";
+    message = "Longitude must be between -180 and 180 degrees.";
+    inputError = true;
+  }
+
+    // Check if title contains only alphanumeric characters and spaces
+    if (!/^[a-zA-Z0-9\s]+$/.test(title)) {
+    textColour = "danger";
+    message = "Title can only contain letters, numbers, and spaces.";
+    inputError = true;
+  }
+
+  // Check if description contains only alphanumeric characters, spaces, and punctuation
+  if (!/^[a-zA-Z0-9\s.,!?-]+$/.test(description)) {
+    textColour = "danger";
+    message = "Description can only contain letters, numbers, spaces, and punctuation.";
+    inputError = true;
+  }
+
+  // Check if location contains only alphanumeric characters, spaces, and punctuation
+  if (!/^[a-zA-Z0-9\s.,!?-]+$/.test(location)) {
+    textColour = "danger";
+    message = "Location can only contain letters, numbers, spaces, and punctuation.";
+    inputError = true;
+  }
+
+  // If any input error occurred, return
+  if (inputError) return;
+
+  // Proceed with creating the placemark
+  const newPlacemark: newPlacemark = {
+    title: title,
+    description: description,
+    location: location,
+    latitude: latitude,
+    longitude: longitude,
+    category: category,
+    img: ["/images/burren.jpg"],
+  };
+
+  const createdPlacemark = await placemarkService.createPlacemark(newPlacemark, get(currentSession));
+  if (!createdPlacemark) {
+    textColour = "danger";
+    message = "Creation not completed - some error occurred";
+    return;
+  } else {
+    textColour = "success";
+    message = `Placemark successfully created!`;
+    latestPlacemark.set(createdPlacemark);
+  }
+}
 </script>
 
 <form on:submit|preventDefault={createPlacemark}>
   <div class="field">
     <label class="label" for="title">Title:</label>
-    <input bind:value={title} class="input" id="title" name="title" type="text" />
+    <input bind:value={title} class="input" id="title" name="title" type="text" required />
   </div>
   <div class="field">
     <label class="label" for="description">Description:</label>
-    <textarea bind:value={description} class="textarea" id="description" name="description"></textarea>
+    <textarea bind:value={description} class="textarea" id="description" name="description" required></textarea>
   </div>
   <div class="field">
     <label class="label" for="location">Location:</label>
-    <input bind:value={location} class="input" id="location" name="location" type="text" />
+    <input bind:value={location} class="input" id="location" name="location" type="text" required />
   </div>
   <div class="field">
     <label class="label" for="latitude">Latitude:</label>
-    <input bind:value={latitude} class="input" id="latitude" name="latitude" type="float" />
+    <input bind:value={latitude} class="input" id="latitude" name="latitude" type="number" step="any" required />
   </div>
   <div class="field">
     <label class="label" for="longitude">Longitude:</label>
-    <input bind:value={longitude} class="input" id="longitude" name="longitude" type="float" />
+    <input bind:value={longitude} class="input" id="longitude" name="longitude" type="number" step="any" required />
   </div>
   <div class="field">
     <label class="label" for="category">Category:</label>
-    <select bind:value={category} class="input" id="category" name="category">
+    <select bind:value={category} class="input" id="category" name="category" required>
       {#each allowedCategories as cat}
         <option value={cat}>{cat}</option>
       {/each}
     </select>
+  </div>
+  <div class="field has-text-centered has-text-{textColour} is-outlined p-2">
+    {message}
   </div>
   <div class="field">
     <div class="control">

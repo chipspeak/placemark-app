@@ -9,3 +9,4 @@ export const chartType = writable<string>();
 export const themeStore = writable<string>("light"); 
 export const columnSizeStore = writable<string>("is-half"); 
 export const cardColumnSizeStore = writable<string>("is-half"); 
+export const updateOnButtonClick = writable<boolean>(false);

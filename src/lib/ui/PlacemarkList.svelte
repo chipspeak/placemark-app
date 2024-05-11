@@ -42,6 +42,7 @@ export async function handleDelete(placemarkId: string) {
 }
 
 export async function handleUpdate(updatedPlacemark: Placemark) {
+  
   if (updatedPlacemark.userId !== $currentSession._id) {
     return acts.add({ mode: 'danger', lifetime: '3', message: 'You do not have permission to update this placemark!' });
   }
@@ -90,6 +91,9 @@ export function handleImageUploaded(event: CustomEvent<{ imageUrl: string }>, pl
 
 export function handleImageDelete(placemarkId: string) {
   const placemark = placemarks.find(p => p._id === placemarkId);
+  if (placemark?.img?.length === 0) {
+    return acts.add({ mode: 'danger', lifetime: '3', message: 'No image to delete!' });
+  }
   if (placemark?.userId !== $currentSession._id) {
     return acts.add({ mode: 'danger', lifetime: '3', message: 'You do not have permission to delete this image!' });
   }

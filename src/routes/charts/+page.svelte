@@ -15,15 +15,15 @@
   let weatherForecastMap: Record<string, any> = {};
 
   let selectedPlacemarkId: string;
-  let selectedDataType: 'temperature' | 'wind' | 'pressure' = 'temperature';
+  let selectedDataType: "temperature" | "wind" | "pressure" = "temperature";
 
   let trendData: DataSet = {
     labels: [],
-    datasets: [{ values: [] }],
+    datasets: [{ values: [] }]
   };
 
   function handlePlacemarkChange() {
-    const placemark = placemarks.find(pm => pm._id === selectedPlacemarkId);
+    const placemark = placemarks.find((pm) => pm._id === selectedPlacemarkId);
     if (placemark) {
       updateTrendData(placemark, selectedDataType);
     } else {
@@ -32,7 +32,7 @@
   }
 
   function handleDataTypeChange() {
-    const placemark = placemarks.find(pm => pm._id === selectedPlacemarkId);
+    const placemark = placemarks.find((pm) => pm._id === selectedPlacemarkId);
     if (placemark) {
       updateTrendData(placemark, selectedDataType);
     } else {
@@ -40,30 +40,30 @@
     }
   }
 
-  function updateTrendData(placemark: Placemark, dataType: 'temperature' | 'wind' | 'pressure'): void {
+  function updateTrendData(placemark: Placemark, dataType: "temperature" | "wind" | "pressure"): void {
     const weatherData = weatherForecastMap[placemark._id];
     if (!weatherData || !weatherData.list) {
       resetTrendData();
       return;
     }
 
-    const filteredEntries = weatherData.list.filter((entry: { dt_txt: string; }) => {
+    const filteredEntries = weatherData.list.filter((entry: { dt_txt: string }) => {
       const time = new Date(entry.dt_txt).getHours();
       return time === 12 || time === 21;
     });
 
-    const labels = filteredEntries.map((entry: { dt_txt: string; }) => entry.dt_txt);
+    const labels = filteredEntries.map((entry: { dt_txt: string }) => entry.dt_txt);
     let values: number[];
 
     switch (dataType) {
-      case 'temperature':
-        values = filteredEntries.map((entry: { main: { temp: number; }; }) => entry.main.temp);
+      case "temperature":
+        values = filteredEntries.map((entry: { main: { temp: number } }) => entry.main.temp);
         break;
-      case 'wind':
-        values = filteredEntries.map((entry: { wind: { speed: number; }; }) => entry.wind.speed);
+      case "wind":
+        values = filteredEntries.map((entry: { wind: { speed: number } }) => entry.wind.speed);
         break;
-      case 'pressure':
-        values = filteredEntries.map((entry: { main: { pressure: number; }; }) => entry.main.pressure);
+      case "pressure":
+        values = filteredEntries.map((entry: { main: { pressure: number } }) => entry.main.pressure);
         break;
       default:
         values = [];
@@ -71,16 +71,18 @@
 
     trendData = {
       labels,
-      datasets: [{
-        values
-      }]
+      datasets: [
+        {
+          values
+        }
+      ]
     };
   }
 
   function resetTrendData(): void {
     trendData = {
       labels: [],
-      datasets: [{ values: [] }],
+      datasets: [{ values: [] }]
     };
   }
 
@@ -90,38 +92,38 @@
     weatherForecastMap = data.weatherForecastMap;
 
     if (placemarks.length > 0) {
-        selectedPlacemarkId = placemarks[0]._id;
-        const defaultPlacemark = placemarks[0];
-        updateTrendData(defaultPlacemark, selectedDataType);
+      selectedPlacemarkId = placemarks[0]._id;
+      const defaultPlacemark = placemarks[0];
+      updateTrendData(defaultPlacemark, selectedDataType);
     }
   });
 </script>
 
 <div>
   <Card title="Charts" icon="fa-calculator">
-    <!-- Inject the select dropdowns into the header-extra slot -->
-    <span slot="header-extra" class="is-flex is-align-items-center">
-      <!-- Dropdown for selecting a placemark -->
-      <span class="select is-small mr-3">
-        <select bind:value={selectedPlacemarkId} on:change={handlePlacemarkChange}>
-          {#each placemarks as placemark}
-            <option value={placemark._id}>{placemark.title}</option>
-          {/each}
-        </select>
+    <Card title="5-day Forecast" icon="fa-sun">
+      <!-- Inject the select dropdowns into the header-extra slot -->
+      <span slot="header-extra" class="is-flex is-align-items-center">
+        <!-- Dropdown for selecting a placemark -->
+        <span class="select is-small mr-3">
+          <select bind:value={selectedPlacemarkId} on:change={handlePlacemarkChange}>
+            {#each placemarks as placemark}
+              <option value={placemark._id}>{placemark.title}</option>
+            {/each}
+          </select>
+        </span>
+        <!-- Dropdown for selecting data type (temperature, wind, or pressure) -->
+        <span class="select is-small">
+          <select bind:value={selectedDataType} on:change={handleDataTypeChange}>
+            <option value="temperature">Temperature °C</option>
+            <option value="wind">Wind Speed km/h</option>
+            <option value="pressure">Pressure hPa</option>
+          </select>
+        </span>
       </span>
-
-      <!-- Dropdown for selecting data type (temperature, wind, or pressure) -->
-      <span class="select is-small">
-        <select bind:value={selectedDataType} on:change={handleDataTypeChange}>
-          <option value="temperature">Temperature °C</option>
-          <option value="wind">Wind Speed km/h</option>
-          <option value="pressure">Pressure hPa</option>
-        </select>
-      </span>
-    </span>
-
-    <!-- Chart for the trend data -->
-    <Chart data={trendData} type="line" />
+      <!-- Chart for the trend data -->
+      <Chart data={trendData} type="line" />
+    </Card>
 
     <!-- Charts for category and county counts of placemarks -->
     <div class="columns">

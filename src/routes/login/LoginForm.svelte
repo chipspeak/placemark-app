@@ -3,26 +3,13 @@
   import { goto } from "$app/navigation";
   import Message from "$lib/ui/Message.svelte";
   import UserCredentials from "$lib/ui/UserCredentials.svelte";
-    import { currentSession } from "$lib/stores";
-    import { Icon } from "leaflet";
+  import { currentSession } from "$lib/stores";
+  import { acts } from '@tadashi/svelte-notification';
 
   let message: string = "";
 
-  /*
-  async function googleLogin () {
-    const session = await placemarkService.loginWithGoogle();
-    if (session) {
-      const userJson = JSON.stringify(session);
-      throw goto("/create");
-    } else {
-      throw goto("/");
-    }
-  }
-  */
-
-  async function handleLogin(providerType: 'google' | 'github' | 'microsoft' ) {
+  async function handleLogin(providerType: "google" | "github" | "microsoft") {
     try {
-      
       const session = await placemarkService.loginWithProvider(providerType);
 
       if (session) {
@@ -49,10 +36,12 @@
         }
       } else {
         console.error("Google login failed.");
+        acts.add({ mode: 'danger', lifetime: '3', message: `Google login failed!` });
         await goto("/");
       }
     } catch (error) {
       console.error("Error during Google login:", error);
+      acts.add({ mode: 'danger', lifetime: '3', message: `Error during Google login: ${error}` });
     }
   }
 </script>
@@ -63,6 +52,13 @@
 {/if}
 <form method="POST" action="?/login">
   <UserCredentials />
-  <button class="mt-5 button is-success is-fullwidth">Log In via Placemark</button>
+  <button class="mt-5 button is-success is-fullwidth">    <span>Log in via Placemark account</span>
+    <span class="icon is-small">
+      <i class="fa fa-map"></i>
+    </span></button>
 </form>
-<button class="mt-5 button is-success is-fullwidth" on:click={() => handleLogin('google')}>Login via Google</button>
+<p class="has-text-centered mt-2">Or</p>
+<button class="mt-3 button is-success is-fullwidth" on:click={() => handleLogin("google")}><span>Log in directly via Google</span>
+  <span class="icon is-small">
+    <i class="fab fa-google"></i>
+  </span></button>

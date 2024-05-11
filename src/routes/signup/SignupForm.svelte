@@ -41,7 +41,17 @@
   {/if}
   <form on:submit|preventDefault={signup}>
     <UserCredentials bind:email bind:password />
-    <button class="mt-5 button is-success is-fullwidth">Create Account</button>
-    <br />
+    <button class="mt-5 button is-success is-fullwidth">
+      <span>Create an account</span>
+      <span class="icon is-small">
+        <i class="fa fa-user"></i>
+      </span>
+    </button>
+    <p class="has-text-centered mt-2">Or</p>
   </form>
-  <button class="mt-5 button is-success is-fullwidth" on:click={() => handleSignup('microsoft')}>Sign up via Microsoft</button>
+  <button class="mt-3 button is-success is-fullwidth" on:click={() => handleSignup('google')}>
+    <span>Sign up via Google</span>
+    <span class="icon is-small">
+      <i class="fab fa-google"></i>
+    </span>
+  </button>

@@ -13,7 +13,7 @@ export const actions = {
     if (!email || !password) {
       throw redirect(303, "/login");
     } else {
-      console.log(`attempting to log in email: ${email} with password: ${password}`);
+      console.log(`attempting to log in email: ${email}`);
       const session = await placemarkService.login(email, password);
       if (session) {
         const userJson = JSON.stringify(session);
@@ -34,13 +34,13 @@ export const actions = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setSession: async ({ request, cookies }: { request: any; cookies: any }) => {
     const formData = await request.formData();
-
-    console.log("formData prior to reformat: ", formData);
+    
+    // console.log("formData prior to reformat: ", formData);
     const sessionData = formData.get("session");
-    console.log("sessionData: ", sessionData);
+    // console.log("sessionData: ", sessionData);
     const session = JSON.parse(sessionData);
-    console.log("session after JSON parse: ", session);
-    console.log("Received session data from client.");
+    // console.log("session after JSON parse: ", session);
+    // console.log("Received session data from client.");
     const userJson = JSON.stringify(session);
     cookies.set("placemark-user", userJson, {
       path: "/",
@@ -49,9 +49,9 @@ export const actions = {
       secure: !dev,
       maxAge: 60 * 60 * 24 * 7 // one week
     });
-    console.log("session prior to redirect: ", session);
-    console.log("Set user cookie.");
-    console.log("Redirecting to /create");
+    // console.log("session prior to redirect: ", session);
+    // console.log("Set user cookie.");
+    // console.log("Redirecting to /create");
 
     currentSession.set(session);
 

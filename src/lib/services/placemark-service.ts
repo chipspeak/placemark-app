@@ -4,6 +4,7 @@ import type { Session, User } from "$lib/types/placemark-types";
 import type { newPlacemark, Placemark } from "$lib/types/placemark-types";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, OAuthProvider } from "firebase/auth";
 import { auth } from "$lib/Firebase/firebase.client";
+import { acts } from "@tadashi/svelte-notification";
 
 export const placemarkService = {
   baseUrl: "http://localhost:8010/proxy",
@@ -37,6 +38,7 @@ export const placemarkService = {
       return response.status == 201;
     } catch (error) {
       console.error("Error signing up user:", error);
+      acts.add({ mode: 'danger', lifetime: '3', message: error });
       throw error;
     }
   },
@@ -67,6 +69,7 @@ export const placemarkService = {
       return false;
     } catch (error) {
       console.error("Error signing up user:", error);
+      acts.add({ mode: 'danger', lifetime: '3', message: error });
       return false;
     }
   },
@@ -121,12 +124,13 @@ export const placemarkService = {
         token: response.data.token,
         _id: response.data._id
       };
-      console.log("session token from placemark service function: ", session.token);
-      console.log("session id from placemark service function:: ", session._id);
-      console.log("session name from placemark service function:: ", session.name);
+      // console.log("session token from placemark service function: ", session.token);
+      // console.log("session id from placemark service function:: ", session._id);
+      // console.log("session name from placemark service function:: ", session.name);
       return session;
     } catch (error) {
       console.log("Error: ", error);
+
       return null;
     }
   },

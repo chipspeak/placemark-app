@@ -3,7 +3,7 @@
 import { onMount } from "svelte";
 import type { Placemark } from "$lib/types/placemark-types";
 import { placemarkService } from "$lib/services/placemark-service";
-import { currentSession, placemarkStore } from "$lib/stores";
+import { currentSession, placemarkDisplayStore, placemarkStore } from "$lib/stores";
 import { get } from "svelte/store";
 import PlacemarkCard from "./PlacemarkCard.svelte";
 import { acts } from '@tadashi/svelte-notification';
@@ -20,6 +20,17 @@ let weatherCollapse: Record<string, boolean> = {};
 
 placemarkStore.subscribe((value) => {
     placemarks = value;
+});
+
+// reactive statement to filter placemarks based on the placemarkDisplayStore selection
+$: filteredPlacemarks = placemarks.filter(placemark => {
+  if ($placemarkDisplayStore === "all") {
+    // Show all placemarks
+    return true;
+  } else if ($placemarkDisplayStore === "user") {
+    // Show only user's placemarks
+    return placemark.userId === get(currentSession)._id;
+  }
 });
 
 export async function handleDelete(placemarkId: string) {
@@ -57,6 +68,9 @@ export async function handleUpdate(updatedPlacemark: Placemark) {
       placemarkStore.set(placemarks);
       acts.add({ mode: 'success', lifetime: '3', message: 'Placemark updated successfully!' });
       fetchWeatherDataForPlacemark(updatedPlacemark);
+    }
+    if (!success) {
+      acts.add({ mode: 'danger', lifetime: '3', message: 'Failed to update placemark!' });
     }
   } catch (error) {
     console.error('Failed to update placemark:', error);
@@ -162,7 +176,8 @@ onMount(() => {
 
 
 <div class="columns is-multiline">
-{#each placemarks as placemark}
+  
+{#each filteredPlacemarks as placemark}
 <PlacemarkCard
   placemarks={placemarks}
   placemark={placemark}
@@ -182,4 +197,6 @@ onMount(() => {
 />
 {/each}
 </div>
+
+
 

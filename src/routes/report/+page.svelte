@@ -2,7 +2,7 @@
   import { subTitle } from "$lib/stores";
   import Card from "$lib/ui/Card.svelte";
   import PlacemarkList from "$lib/ui/PlacemarkList.svelte";
-  import { columnSizeStore } from "$lib/stores";
+  import { columnSizeStore, placemarkDisplayStore } from "$lib/stores";
 
   export let data: any;
   subTitle.set("View All Placemarks");
@@ -13,6 +13,11 @@
     { label: 'One Third', value: 'is-one-third' },
     { label: 'Full Width', value: 'is-full' },
   ];
+
+  const userDisplayChoices = [
+    { label: 'View all', value: 'all' },
+    { label: 'View mine', value: 'user' },
+  ];
 </script>
 
 <Card title="All Placemarks" icon="fa-map">
@@ -22,6 +27,16 @@
     <span class="select is-small">
       <select bind:value={$columnSizeStore}>
         {#each columnSizes as { label, value }}
+          <option value={value}>{label}</option>
+        {/each}
+      </select>
+    </span>
+  </span>
+  <span slot="header-extra-2" class="is-flex is-align-items-center">
+    <span class="mr-2 ml-4">Filter:</span> <!-- Add text "Card Size" -->
+    <span class="select is-small">
+      <select bind:value={$placemarkDisplayStore}>
+        {#each userDisplayChoices as { label, value }}
           <option value={value}>{label}</option>
         {/each}
       </select>

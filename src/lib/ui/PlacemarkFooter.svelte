@@ -50,4 +50,3 @@
         --tadashi_svelte_notifications_zindex: 1001;
     }
 </style>
-

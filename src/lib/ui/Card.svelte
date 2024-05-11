@@ -15,6 +15,9 @@
       <span class="card-header-extra">
         <slot name="header-extra" />
       </span>
+      <span class="card-header-extra-2">
+        <slot name="header-extra-2" />
+      </span>
     </p>
   </header>
   <div class="card-content">

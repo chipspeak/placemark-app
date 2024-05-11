@@ -11,7 +11,7 @@ import SignupForm from "./SignupForm.svelte";
           <h1 class="title has-text-success has-text-centered">Signup to PLACEMARK<i class="ml-4 fas fa-solid fa-map has-text-success"></i></h1>
           <div class="box">
             <SignupForm></SignupForm>
-            <p class="has-text-centered">Already have an account? <a href="/login" data-cy="login-redirect">Login Here</a></p>
+            <p class="has-text-centered mt-2">Already have an account? <a href="/login" data-cy="login-redirect">Login Here</a></p>
           </div>
         </div>
       </div>

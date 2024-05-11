@@ -21,9 +21,9 @@
     {/each}
     <div class="collapse has-text-left" id={`weather-${placemark._id}`} class:is-hidden={weatherCollapse[`weather-${placemark._id}`]}>
       <p><strong>Conditions:</strong> {weatherDataMap[placemark._id]?.weather[0].description}</p>
-      <p><strong>Temperature:</strong> {weatherDataMap[placemark._id]?.main.temp}° celsius</p>
-      <p><strong>Wind Speed:</strong> {weatherDataMap[placemark._id]?.wind.speed} km/ph</p>
-      <p><strong>Wind Direction:</strong> {weatherDataMap[placemark._id]?.wind.deg}°</p>
-      <p><strong>Pressure</strong> {weatherDataMap[placemark._id]?.main.pressure} atm</p>
+      <p class="mt-2"><strong>Temperature:</strong> {weatherDataMap[placemark._id]?.main.temp}° celsius</p>
+      <p class="mt-2"><strong>Wind Speed:</strong> {weatherDataMap[placemark._id]?.wind.speed} km/ph</p>
+      <p class="mt-2"><strong>Wind Direction:</strong> {weatherDataMap[placemark._id]?.wind.deg}°</p>
+      <p class="mt-2"><strong>Pressure</strong> {weatherDataMap[placemark._id]?.main.pressure} atm</p>
     </div>
 {/if}

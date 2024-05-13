@@ -101,8 +101,8 @@ export function calculatePlacemarkByUser(placemarks: Placemark[], users: User[])
   Object.entries(placemarksByUserCounts).forEach(([userId, count]) => {
     const user = userMap.get(userId);
     if (user) {
-      const fullName = `${user.firstName} ${user.lastName}`;
-      placemarksByUser.labels.push(fullName);
+      const name = user.email.split("@")[0];
+      placemarksByUser.labels.push(name);
       placemarksByUser.datasets[0].values.push(count);
     }
   });

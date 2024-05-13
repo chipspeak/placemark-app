@@ -148,5 +148,8 @@
         </Card>
       </div>
     </div>
+    <Card title="Number of Placemarks per User" icon="fa-users">
+      <Chart data={data.placemarksByUser} type="bar" />
+    </Card>
   </Card>
 </div>

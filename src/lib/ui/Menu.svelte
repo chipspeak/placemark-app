@@ -7,6 +7,14 @@
   function toggleTheme() {
     themeStore.update((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
   }
+
+  // Function to toggle the navbar menu to allow use on smaller screens
+  function toggleNavbarMenu() {
+    const navbarMenu = document.getElementById("navbarMenu");
+    if (navbarMenu) {
+      navbarMenu.classList.toggle("is-active");
+    }
+  }
 </script>
 
 <!-- Menu component -->
@@ -19,6 +27,13 @@
           <span class="icon"> <img class="object-fit" src="/icon.png" alt="placemark-icon" /></span><span class="pl-2"><strong>PLACEMARK</strong> </span>
         </a>
       </div>
+      <!-- Hamburger menu -->
+      <button class="navbar-burger has-text-dark" aria-label="menu" aria-expanded="false" on:click={toggleNavbarMenu}>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
       <div id="navbarMenu" class="navbar-menu">
         <div class="navbar-end">
           <button on:click={toggleTheme} class="navbar-item mr-3">

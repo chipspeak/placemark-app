@@ -24,12 +24,21 @@
   ];
 </script>
 
+<!-- CSS class for hiding elements on mobile -->
+<style>
+  @media (max-width: 768px) {
+    .hide-on-mobile {
+      display: none;
+    }
+  }
+</style>
+
 <!-- Display the PlacemarkList component using the card component -->
-<Card title="All Placemarks" icon="fa-map">
+<Card title="Placemarks" icon="fa-map">
   <!-- Place text "Card Size" and select in the header-extra slot -->
-  <span slot="header-extra" class="is-flex is-align-items-center">
-    <span class="mr-2">Card Size:</span> <!-- Add text "Card Size" -->
-    <span class="select is-small">
+  <span slot="header-extra" class="is-flex is-align-items-center hide-on-mobile">
+    <span class="mr-2 hide-on-mobile">Size:</span> 
+    <span class="select hide-on-mobile is-small">
       <select bind:value={$columnSizeStore}>
         {#each columnSizes as { label, value }}
           <option value={value}>{label}</option>
@@ -38,7 +47,7 @@
     </span>
   </span>
   <span slot="header-extra-2" class="is-flex is-align-items-center">
-    <span class="mr-2 ml-4">Filter:</span> <!-- Add text "Card Size" -->
+    <span class="mr-2 ml-4">Filter:</span> 
     <span class="select is-small">
       <select bind:value={$placemarkDisplayStore}>
         {#each userDisplayChoices as { label, value }}

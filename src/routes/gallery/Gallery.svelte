@@ -69,7 +69,7 @@
           </div>
           <footer class="card-footer">
             <p class="card-footer-item pt-5">{placemark.title}</p>
-            <p class="card-footer-item pt-2">{placemark.location}</p>
+            <p class="card-footer-item pt-5">{placemark.location}</p>
           </footer>
         </div>
       </div>

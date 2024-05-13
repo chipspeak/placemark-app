@@ -11,7 +11,7 @@
   export let allowedCategories = []; // Prop to accept an array of allowed categories
 
   // regex to check for prohibited characters
-  const prohibitedCharacters = /[^a-zA-Z0-9\s]/;
+  const prohibitedCharacters = /[^a-zA-Z0-9\s.]/;
 
   const dispatch = createEventDispatcher();
   let editing = false,

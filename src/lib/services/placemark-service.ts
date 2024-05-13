@@ -7,7 +7,7 @@ import { auth } from "$lib/Firebase/firebase.client";
 
 // Export placemarkService for use in other components where api calls are needed
 export const placemarkService = {
-  baseUrl: "http://localhost:8010/proxy",
+  baseUrl: "https://placemark-api-backend.onrender.com",
 
   // The signup method used to create a placemark user i.e one where the user specifies their email and password
   async signup(email: string, password: string): Promise<boolean> {

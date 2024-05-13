@@ -3,6 +3,7 @@
   export let icon = "";
 </script>
 
+<!-- Card component used throughout. Extra header allows addition of selects in certain menus-->
 <div class="card mb-5">
   <header class="card-header">
     <p class="card-header-title">
@@ -31,4 +32,3 @@
     margin-left: auto;
   }
 </style>
-

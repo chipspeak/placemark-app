@@ -5,7 +5,7 @@ import type { PageServerLoad } from "./$types";
 import type { Placemark } from "$lib/types/placemark-types";
 import { redirect } from "@sveltejs/kit";
 
-
+// Server Page
 export const load: PageServerLoad = async ({ parent }) => {
   const { session } = await parent();
 
@@ -27,6 +27,7 @@ export const load: PageServerLoad = async ({ parent }) => {
             console.error(`Failed to fetch weather data for placemark ${placemark._id}:`, error);
         }
       }
+      // Return the placemarks and weather data for use client side
       return {
         placemarks,
         weatherForecastMap,

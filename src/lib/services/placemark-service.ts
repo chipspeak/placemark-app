@@ -4,48 +4,42 @@ import type { Session, User } from "$lib/types/placemark-types";
 import type { newPlacemark, Placemark } from "$lib/types/placemark-types";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, OAuthProvider } from "firebase/auth";
 import { auth } from "$lib/Firebase/firebase.client";
-import { acts } from "@tadashi/svelte-notification";
 
+// Export placemarkService for use in other components where api calls are needed
 export const placemarkService = {
   baseUrl: "http://localhost:8010/proxy",
 
+  // The signup method used to create a placemark user i.e one where the user specifies their email and password
   async signup(email: string, password: string): Promise<boolean> {
     try {
       // Create a new user using Firebase Authentication
       const firebaseResponse = await createUserWithEmailAndPassword(auth, email, password);
       console.log("firebaseResponse: ", firebaseResponse);
 
-      // Check if the firebaseResponse and firebaseResponse.user are valid
-      if (!firebaseResponse || !firebaseResponse.user) {
-        console.error("Invalid user credential or user is null");
-        throw new Error("User creation failed.");
-      }
-
-      // Extract the email from the UserCredential object
+      // Extrat the email from the UserCredential object
       const userEmail = firebaseResponse.user.email;
-
-      if (!userEmail) {
-        console.error("Invalid user email");
-        throw new Error("User email is null.");
-      }
-
       console.log("userEmail: ", userEmail);
+      // Initialize a new user object with the email extracted from the UserCredential object
       const newUser = {
         email: userEmail
       };
+      // Post the new user to the backend api
       const response = await axios.post(`${this.baseUrl}/api/users`, newUser);
       console.log("response: ", response);
+      // Return a success status
       return response.status == 201;
     } catch (error) {
+      // Catching any errors and logging them to the console before throwing the error
       console.error("Error signing up user:", error);
-      acts.add({ mode: 'danger', lifetime: '3', message: error });
       throw error;
     }
   },
 
+  // The signup method used to create a placemark user via 3rd party authentification providers (google implemented, others remain to be implemented in future versions)
   async signupViaProvider(providerType: 'google' | 'github' | 'microsoft' ): Promise<boolean> {
     try {
       let provider;
+      // Switch statement to determine the provider type and initialize the provider object accordingly
       switch (providerType) {
           case 'google':
               provider = new GoogleAuthProvider();
@@ -59,44 +53,52 @@ export const placemarkService = {
           default:
               throw new Error(`Unsupported provider type: ${providerType}`);
       }
+      // Signing in with the provider object vua the firebase sdk pop up method
       const firebaseResponse = await signInWithPopup(auth, provider);
+      // Extracting the email from the UserCredential object returned by the firebase sdk
       const userEmail = firebaseResponse.user.email;
       console.log("userEmail via google: ", userEmail);
+      // posting this new user to the backend api by passing the email returned by the firebase sdk
       const signup = await axios.post(`${this.baseUrl}/api/users`, { email: userEmail });
+      // returning a success status
       if (signup.status == 201) {
         return true;
       }
+      // Catching any errors and logging them to the console
       return false;
     } catch (error) {
       console.error("Error signing up user:", error);
-      acts.add({ mode: 'danger', lifetime: '3', message: error });
+      // returning a failure status
       return false;
     }
   },
 
-
+  // The login method used to authenticate a user via email and password
   async login(email: string, password: string): Promise<Session | null> {
     try {
+      // Sign in with email and password via the firebase sdk
       const firebaseResponse = await signInWithEmailAndPassword(auth, email, password);
+      // Extract the email from the UserCredential object returned by the firebase sdk
       const userEmail = firebaseResponse.user.email;
+      // Post the email to the backend api for verification and token generation
       const response = await axios.post(`${this.baseUrl}/api/users/authenticate`, { email: userEmail });
       axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
       console.log("response.data: ", response.data);
+      // Initialize a new session object with the email, token and id extracted from the response object
       const session: Session = {
         name: response.data.email,
         token: response.data.token,
         _id: response.data._id
       };
-      console.log("session token: ", session.token);
-      console.log("session id: ", session._id);
-      console.log("session name: ", session.name);
+     // Return the session object
       return session;
     } catch (error) {
       console.log("Error: ", error);
-      return null;
+      throw error;
     }
   },
 
+  // The login method used to authenticate a user via 3rd party authentification providers (google implemented, others remain to be implemented in future versions)
   async loginWithProvider(providerType: 'google' | 'github' | 'microsoft' ): Promise<Session | null> {
     try {
       let provider;
@@ -111,30 +113,32 @@ export const placemarkService = {
               provider = new OAuthProvider('microsoft.com');
               break;
           default:
-              throw new Error(`Unsupported provider type: ${providerType}`);
+              provider = new GoogleAuthProvider();
       }
+      // Sign in with the provider object via the firebase sdk pop up method
       const firebaseResponse = await signInWithPopup(auth, provider);
+      // Extract the email from the UserCredential object returned by the firebase sdk
       const userEmail = firebaseResponse.user.email;
       console.log("userEmail via google: ", userEmail);
+      // Post the email to the backend api for verification and token generation
       const response = await axios.post(`${this.baseUrl}/api/users/authenticate`, { email: userEmail });
       axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
       console.log("response.data: ", response.data);
+      // Initialize a new session object with the email, token and id extracted from the response object
       const session: Session = {
         name: response.data.email,
         token: response.data.token,
         _id: response.data._id
       };
-      // console.log("session token from placemark service function: ", session.token);
-      // console.log("session id from placemark service function:: ", session._id);
-      // console.log("session name from placemark service function:: ", session.name);
+      // Return the session object
       return session;
     } catch (error) {
       console.log("Error: ", error);
-
       return null;
     }
   },
 
+  // Retrieve placemark by passing its id and the session object to the backend api
   async getPlacemarkById(placemarkId: string, session: Session): Promise<Placemark | null> {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
@@ -146,6 +150,7 @@ export const placemarkService = {
     }
   },
 
+  // Retrieve all users from the backend api
   async getUsers(session: Session): Promise<User[]> {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
@@ -157,6 +162,7 @@ export const placemarkService = {
     }
   },
 
+  // Create a new placemark by passing the new placemark object and the session object to the backend api
   async createPlacemark(placemark: newPlacemark, session: Session) {
     console.log(placemark);
     try {
@@ -171,12 +177,15 @@ export const placemarkService = {
     }
   },
 
+  // Update a placemark by passing the placemark object and the session object to the backend api
   async updatePlacemark(placemark: Placemark, session: Session) {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
+      // Format the placemark payload before sending it to the backend api (backend expects standard payload minus ids etc)
       const formattedPlacemark = await this.formatPlacemarkPayload(placemark);
       const response = await axios.put(`${this.baseUrl + "/api/placemarks/" + placemark._id}`, formattedPlacemark);
       console.log("updating placemark: ", placemark);
+      // Retrieve the updated placemarks weather again after updating it
       this.getPlacemarkWeather(placemark, session);
       return response.status == 200;
     } catch (error) {
@@ -185,6 +194,20 @@ export const placemarkService = {
     }
   },
 
+  // Delete an image from cloudinary by passing the image name and the session object to the backend api
+  async deleteImageFromCloudinary(image: string, session: Session) {
+    try {
+      axios.defaults.headers.common["Authorization"] = session.token;
+      const response = await axios.delete(`${this.baseUrl}/api/placemarks/deleteImage/${encodeURIComponent(image)}`);
+      console.log("deleting image from cloudinary: ", image);
+      return response.status == 204;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  },
+
+  // Format the placemark payload before sending it to the backend api (backend expects standard payload minus ids etc)
   async formatPlacemarkPayload(placemark: Placemark) {
     return {
       title: placemark.title,
@@ -197,6 +220,7 @@ export const placemarkService = {
     };
   },
 
+  // Retrieve the weather for a placemark by passing the placemark object and the session object to the backend api (retrieved via openweather api)
   async getPlacemarkWeather(placemark: Placemark, session: Session) {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
@@ -210,6 +234,7 @@ export const placemarkService = {
     }
   },
 
+  // Retrieve the 5-day forecast for a placemark by passing the placemark object and the session object to the backend api (retrieved via openweather api)
   async getPlacemarkForecast(placemark: Placemark, session: Session) {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;
@@ -223,6 +248,7 @@ export const placemarkService = {
     }
   },
 
+  // Retrieve all placemarks by passing the session object to the backend api
   async getPlacemarks(session: Session): Promise<Placemark[]> {
     try {
       console.log("session token: ", session.token);
@@ -234,6 +260,7 @@ export const placemarkService = {
     }
   },
 
+  // Delete a placemark by passing the placemark id and the session object to the backend api
   async deletePlacemark(placemarkId: string, session: Session): Promise<boolean> {
     try {
       axios.defaults.headers.common["Authorization"] = session.token;

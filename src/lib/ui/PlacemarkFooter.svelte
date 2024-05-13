@@ -3,6 +3,7 @@
     import UploadWidget from "./UploadWidget.svelte";
     import { Notifications } from '@tadashi/svelte-notification';
 
+    // Declaring variables and functions to allow passing of props
     export let placemark: Placemark;
     export let handleUpdate: (placemark: Placemark) => void;
     export let handleDelete: (placemarkId: string) => void;
@@ -39,6 +40,7 @@
 </footer>
 <Notifications />
 
+<!-- Style for the Notifications. Colours matched via hsl to Bulma's success and danger colours -->
 <style>
     :global(:root) {
         --tadashi_svelte_notifications_width: 250px;

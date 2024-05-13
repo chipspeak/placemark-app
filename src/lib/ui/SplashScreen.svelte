@@ -1,3 +1,5 @@
+<!-- Application Splash Screen-->
+
 <section class="hero is-fullheight is-default is-bold">
   <div class="hero-head"></div>
   <div class="hero-body">
@@ -15,11 +17,11 @@
           </h1>
           <h2 class="subtitle is-4 mt-2">The point-of-interest application</h2>
           <p class="has-text-centered">
-            <a class="button is-medium is-success p-3 mr-3" href="/signup">
-              <span class="icon"><i class="fas fa-user-plus pl-3"></i></span><span class="pl-3">Sign Up</span>
+            <a class="button is-medium is-success  mr-3" href="/signup">
+              <span>Sign Up</span><span class="icon"><i class="fas fa-user-plus"></i></span>
             </a>
-            <a class="button is-medium is-success p-3" href="/login">
-              <span class="icon"><i class="fas fa-users pl-3"></i></span><span class="pl-3">Login</span>
+            <a class="button is-medium is-success " href="/login">
+              <span>Login</span><span class="icon"><i class="fas fa-users"></i></span>
             </a>
           </p>
         </div>

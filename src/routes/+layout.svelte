@@ -6,41 +6,42 @@
   import { themeStore } from "$lib/stores";
   import { browser } from "$app/environment";
 
+  // Define the data prop to receive data from server
   export let data: any;
   if (data.session) {
+    // Set the current session data
     currentSession.set(data.session);
   } else {
+    // Clear the session data and set the theme to light
     currentSession.set({ name: "", _id: "", token: "" });
     themeStore.set("light");
   }
 
-
-
-let currentTheme = 'light';
-themeStore.subscribe((value: string) => {
-  currentTheme = value;
-  if (browser) {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-  }
-});
+  let currentTheme = "light";
+  // Subscribe to the theme store to update the theme for each page when it changes
+  themeStore.subscribe((value: string) => {
+    currentTheme = value;
+    if (browser) {
+      document.documentElement.setAttribute("data-theme", currentTheme);
+    }
+  });
 </script>
 
+<!-- Define the core layout of application -->
+<!-- Outer div allows full page theme toggles to occur -->
+<!-- Inner div contains the main content of the page -->
 <div data-theme={currentTheme}>
-<div class="container">
+  <div class="container">
     {#if $currentSession.token}
-    <Menu />
+      <Menu />
     {/if}
-
     {#key data.url}
-      <div 
-        in:fly={{ x: -200, duration: 400, delay: 300}}
-        out:fly={{ x: 200, duration: 400}}
-        >
+      <div in:fly={{ x: -200, duration: 400, delay: 300 }} out:fly={{ x: 200, duration: 400 }}>
         {#if $currentSession.token}
-        <Heading />
+          <Heading />
         {/if}
         <slot />
       </div>
     {/key}
-</div>
+  </div>
 </div>

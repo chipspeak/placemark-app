@@ -2,6 +2,8 @@
   import { subTitle } from "$lib/stores";
 </script>
 
+<!-- Main banner which appears on all pages. Takes a subtitle prop to display respective pages-->
+
 {#if $subTitle}
 <section class="card has-background-success mt-4 mb-5 p-5">
   <div class="hero-body">

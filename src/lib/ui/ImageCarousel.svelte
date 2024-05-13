@@ -1,12 +1,13 @@
 <script lang="ts">
     import type { Placemark } from "$lib/types/placemark-types";
-    import Message from "./Message.svelte";
 
+    // Declaring variables to allow passing of props
     export let placemarks: Placemark[];
     export let placemark: Placemark;
     export let photoCollapse: Record<string, boolean> = {};
     export let currentImageIndex: Record<string, number> = {};
 
+    // Function to handle the previous image using the modulo operator and the length of the image array to ensure that the index is within the bounds of the array
     function handleImagePrevious(placemarkId: string) {
         const placemark = placemarks.find(p => p._id === placemarkId);
         if (placemark && placemark.img && placemark.img.length > 0) {
@@ -15,6 +16,7 @@
         }
     }
 
+    // Function to handle the next image using the modulo operator and the length of the image array to ensure that the index is within the bounds of the array
     function handleImageNext(placemarkId: string) {
         const placemark = placemarks.find(p => p._id === placemarkId);
         if (placemark && placemark.img && placemark.img.length > 0) {
@@ -25,6 +27,8 @@
     
     </script>
     
+    <!-- Style for the image carousel -->
+
     <style>
         .card-image img {
           width: 100%; 
@@ -32,6 +36,8 @@
           object-fit: cover; 
         }
       </style>
+
+<!-- Display the image carousel if the placemark has images -->
 
     {#if placemark.img && placemark.img.length > 0}
     <div class="card-image collapse" id={`photo-${placemark._id}`} class:is-hidden={photoCollapse[`photo-${placemark._id}`]}>

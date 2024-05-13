@@ -1,8 +1,8 @@
 <script lang="ts">
   import LoginForm from "./LoginForm.svelte";
-
 </script>
 
+<!-- Log in Form route page -->
 <section class="hero is-fullheight is-default is-bold">
   <div class="hero-head"></div>
   <div class="hero-body">

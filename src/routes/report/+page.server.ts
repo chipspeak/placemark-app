@@ -4,11 +4,12 @@ import type { PageServerLoad } from "./$types";
 import type { Placemark } from "$lib/types/placemark-types";
 import { redirect } from "@sveltejs/kit";
 
+// Server Page
 export const load: PageServerLoad = async ({ parent }) => {
+    // Awaiting the parent function to get the session (+layout.server.ts)
     const { session } = await parent();
-
+    // If the session exists, fetch the placemarks
     if(session) {
-    // Fetch placemarks
     const placemarks: Placemark[] = await placemarkService.getPlacemarks(session);
     
     // Initialize weather data map
@@ -24,7 +25,7 @@ export const load: PageServerLoad = async ({ parent }) => {
         }
     }
     
-    // Return the fetched data
+    // Return the fetched data to the client side
     return {
         placemarks,
         weatherDataMap,
@@ -46,6 +47,7 @@ export const load: PageServerLoad = async ({ parent }) => {
         }, {} as Record<string, number>),
     };
 } else {
+    // If the session does not exist, redirect to the login page
     throw redirect(303, "/login");
 }
 }

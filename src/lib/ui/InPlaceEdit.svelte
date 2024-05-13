@@ -25,6 +25,8 @@
     editing = true;
   }
 
+  // Function to submit the edited form of the field. Checks if the value is different from the original value and dispatches the submit event.
+  // Checks for prohibited characters and empty fields and displays an error message (via notification component) if found.
   function submit() {
     if (value != original && event.type === "blur") {
       dispatch("submit", value);
@@ -41,6 +43,7 @@
     editing = false;
   }
 
+  // Function to handle the keydown event. If the escape key is pressed, the value is reset to the original value and editing is set to false.
   function keydown(event) {
     if (event.key == "Escape") {
       event.preventDefault();
@@ -49,11 +52,13 @@
     }
   }
 
+  // Function to focus on the input element when editing
   function focus(element) {
     element.focus();
   }
 </script>
 
+<!-- The InPlaceEdit component allows users to edit a field in place. -->
 {#if editing}
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <form on:submit|preventDefault={submit} on:keydown={keydown}>

@@ -3,8 +3,8 @@
   export let colour = "";
 </script>
 
-
-  <div class="message-body has-text-{colour}">
+<!-- Message component -->
+  <div class="has-text-{colour} has-text-centered">
     {message}
   </div>
 
